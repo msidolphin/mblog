@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- appender是指输出的形式或位置，name和class是两个必备属性 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 把日志输出到控制台，当tomcat启动的时候写入到catalina.out文件 -->
+        <encoder>
+            <!-- %d:          日期 -->
+            <!-- %thread:     当前线程-->
+            <!-- %-5level:    显示日志level -5表示从左显示5个字符长度-->
+            <!-- %logger:     logger名称-->
+            <!-- %msg:        消息-->
+            <!-- %n:          换行-->
+            <pattern>%d{yyyy年MM月dd日 HH:mm:ss.SSS} [%boldYellow(%thread)] %highlight(%-5level) %boldGreen(%logger) -- %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--<appender name="permission" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+        <!--&lt;!&ndash; 定义日志输出路径 ${catalina.home}指tomcat &ndash;&gt;-->
+        <!--<file>${catalina.home}/logs/permission.log</file>-->
+        <!--&lt;!&ndash; 日志压缩格式 &ndash;&gt;-->
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+            <!--<FileNamePattern>${catalina.home}/logs/permission.%d{yyyy-MM-dd}.log.gz</FileNamePattern>-->
+        <!--</rollingPolicy>-->
+        <!--&lt;!&ndash; 指定日志输出格式 &ndash;&gt;-->
+        <!--<layout class="ch.qos.logback.classic.PatternLayout">-->
+            <!--%d{yyyy年MM月dd日 HH:mm:ss.SSS} [%thread] %-5level %logger &#45;&#45; %msg%n-->
+        <!--</layout>-->
+    <!--</appender>-->
+    <!--<logger name="fileLogger" level="INFO">-->
+        <!--<appender-ref ref="permission"/>-->
+    <!--</logger>-->
+
+    <!-- 定义日志输出级别
+        TRACE < DEBUG < INFO
+     -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
