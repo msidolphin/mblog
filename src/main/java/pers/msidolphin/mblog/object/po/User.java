@@ -18,7 +18,7 @@ import java.util.Date;
 public class User extends BasePo{
 
 	@Id
-	private Integer id;			//主键
+	private Long id;			//主键
 
 	@Column(name = "username")
 	private String username;	//用户名

@@ -19,7 +19,7 @@ public class Setting extends BasePo{
 
 	@Id
 	@Column(name = "id")
-	private Integer id;				//主键
+	private Long id;				//主键
 
 	@Column(name = "key_value")
 	private String key;				//key值

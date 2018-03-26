@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Created by msidolphin on 2018/3/26.
  */
-@RestController
+@RestController("portalLinksController")
 @RequestMapping("/links")
 public class LinksController {
 }

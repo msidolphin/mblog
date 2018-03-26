@@ -15,7 +15,7 @@ public class Tag extends BasePo{
 
 	@Id
 	@Column(name = "id")
-	private Integer id;				//主键
+	private Long id;				//主键
 
 	@Column(name = "name")
 	private String name;			//标签名称

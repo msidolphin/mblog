@@ -19,7 +19,7 @@ public class Reply extends BasePo{
 
 	@Id
 	@Column(name = "id")
-	private Integer id;				//主键
+	private Long id;				//主键
 
 	@Column(name = "comment_id")
 	private Integer commentId;		//所属文章id

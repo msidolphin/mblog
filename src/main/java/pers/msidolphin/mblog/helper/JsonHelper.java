@@ -26,7 +26,7 @@ public class JsonHelper {
 
 	static {
 		//格式化
-		objectMapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+		objectMapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, false);
 		//以下配置用于序列化时排除为空的字段
 		objectMapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
 		objectMapper.disable(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES);

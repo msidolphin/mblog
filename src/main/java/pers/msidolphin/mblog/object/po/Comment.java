@@ -18,7 +18,7 @@ public class Comment extends BasePo{
 
 	@Id
 	@Column(name = "id")
-	private Integer id;				//主键
+	private Long id;				//主键
 
 	@Column(name = "article_id")
 	private Integer articleId;		//所属文章id

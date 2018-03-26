@@ -18,7 +18,7 @@ import javax.persistence.Table;
 public class Link extends BasePo{
 
 	@Id
-	private Integer id;			//主键
+	private Long id;			//主键
 
 	@Column(name = "name")
 	private String name;		//连接名称
