@@ -17,14 +17,14 @@ public class BasePo implements Serializable {
 
 
 	@Column(name = "create_time")
-	private Date createTime;	 //创建时间
+	protected Date createTime;	 //创建时间
 
 	@Column(name = "update_time")
-	private Date updateTime;	 //更新时间
+	protected Date updateTime;	 //更新时间
 
 	@Column(name = "creator")
-	private Long creator;		 //创建者
+	protected Long creator;		 //创建者
 
 	@Column(name = "updator")
-	private Long updator;		 //更新者
+	protected Long updator;		 //更新者
 }

@@ -49,6 +49,7 @@ public class LogAspect {
 
 		} catch (Throwable throwable) {
 			log.info("未能正常执行: {}", throwable.getMessage());
+			throw new RuntimeException(throwable);
 		}
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0 ; i < head.length() ; ++i) {
@@ -67,6 +68,6 @@ public class LogAspect {
 			sb.append(names[i] + " : " + objects[i] + " | ");
 		}
 		String output = sb.toString();
-		log.info(output.substring(0, output.lastIndexOf("|")));
+		log.info(output.substring(0, output.lastIndexOf("|") + 1));
 	}
 }

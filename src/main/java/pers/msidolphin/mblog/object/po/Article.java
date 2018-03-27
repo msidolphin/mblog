@@ -4,13 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by msidolphin on 2018/3/26.
  */
 @Entity @Getter @Setter
 @Table(name = "article", schema = "mblog")
-public class Article extends BasePo{
+public class Article {
 
 	@Id
 	@Column(name = "id")
@@ -49,5 +50,34 @@ public class Article extends BasePo{
 	@Column(name = "cid")
 	private Integer cid;		 //分类名称
 
+	@Column(name = "create_time")
+	protected Date createTime;	 //创建时间
+
+	@Column(name = "update_time")
+	protected Date updateTime;	 //更新时间
+
+	@Column(name = "creator")
+	protected Long creator;		 //创建者
+
+	@Column(name = "updator")
+	protected Long updator;		 //更新者
+
+	@Override
+	public String toString() {
+		return "文章：{" +
+				"id=" + id +
+				", title='" + title + '\'' +
+				", thumbnail='" + thumbnail + '\'' +
+				", summary='" + summary + '\'' +
+				", type=" + type +
+				", content='" + content + '\'' +
+				", tags='" + tags + '\'' +
+				", isDelete=" + isDelete +
+				", views=" + views +
+				", editor=" + editor +
+				", vote=" + vote +
+				", cid=" + cid +
+				'}';
+	}
 }
 

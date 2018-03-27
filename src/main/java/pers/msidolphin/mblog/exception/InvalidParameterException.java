@@ -6,4 +6,10 @@ package pers.msidolphin.mblog.exception;
 @SuppressWarnings("ALL")
 public class InvalidParameterException extends AbstractApplicationException {
 
+    public InvalidParameterException() {
+    }
+
+    public InvalidParameterException(String message) {
+        super(message);
+    }
 }

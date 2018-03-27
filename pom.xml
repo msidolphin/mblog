@@ -72,8 +72,9 @@
 		</dependency>
 
 		<dependency>
+			<!--Spring 官方提供的热部署插件 -->
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-devtools</artifactId>
+			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
 
