@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.msidolphin.mblog.model.mapper.ArticleMapper">
+
+    <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.ArticleDto" >
+        <id property="id" column="id" jdbcType="INTEGER" javaType="java.lang.Long" />
+        <result property="title" column="title" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="userName" column="user_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="tags" column="tags" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="comments" column="comments" jdbcType="INTEGER" javaType="java.lang.Integer" />
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </resultMap>
+
+    <select id="findAll" parameterType="pers.msidolphin.mblog.object.query.ArticleQuery" resultMap="BaseResultMap">
+        SELECT
+            a.id id,
+            a.title title,
+           (select u.nickname from user u where u.id = a.creator) user_name,
+           ((select count(c.id) from comment c where c.article_id = a.id)
+            +
+            (select count(r.id) from replies r where r.comment_id = (select c.id from comment c where c.article_id = a.id))
+            ) comments,
+            a.tags,
+            a.create_time,
+            a.update_time
+        FROM article a
+        <where>
+            <if test="title != null">
+                AND a.title LIKE #{title}
+            </if>
+            <if test="startTime != null">
+                AND a.create_time <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND a.create_time <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,15 +1,30 @@
 package pers.msidolphin.mblog.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
+import pers.msidolphin.mblog.helper.Assert;
 import pers.msidolphin.mblog.helper.AutoIdHelper;
 import pers.msidolphin.mblog.helper.Util;
+import pers.msidolphin.mblog.model.mapper.ArticleMapper;
 import pers.msidolphin.mblog.model.repository.ArticleRepository;
 import pers.msidolphin.mblog.object.dto.ArticleDto;
 import pers.msidolphin.mblog.object.po.Article;
+import pers.msidolphin.mblog.object.query.ArticleQuery;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -19,7 +34,27 @@ public class ArticleService {
     private ArticleRepository articleRepository;
 
     @Autowired
+    private ArticleMapper articleMapper;
+
+    @Autowired
     private TagService tagService;
+
+    public PageInfo<ArticleDto> getArticles(ArticleQuery query) throws ParseException {
+        Assert.notNull(query);
+        //处理查询对象中的结束时间
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if(query != null && query.getEndTime() != null) {
+            Date date = query.getEndTime();
+            String dateFormat = sdf.format(date);
+            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            dateFormat += " 23:59:59";
+            query.setEndTime(sdf.parse(dateFormat));
+        }
+        //设置分页参数
+        PageHelper.startPage(query.getPageNum(), query.getPageSize());
+        List<ArticleDto> lists = articleMapper.findAll(query);
+        return new PageInfo<>(lists);
+    }
 
     @Transactional
     public Article saveArticle(Article article, String originTagStr) {
@@ -83,5 +118,45 @@ public class ArticleService {
             return optionalArticle.get();
         }
         return null;
+    }
+
+    private Specification<Article> where(ArticleQuery query) {
+        return new Specification<Article>() {
+            @Nullable
+            @Override
+            public Predicate toPredicate(Root<Article> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
+
+                List<Predicate> predicates = new ArrayList<>();
+
+                if(Util.isNotEmpty(query)) {
+
+                    if(Util.isNotEmpty(query.getTitle())) {
+                        //查询条件标题不为空
+                        predicates.add(cb.like(root.get("title").as(String.class), "%" + query.getTitle() + "%"));
+                    }
+
+                    if(Util.isNotEmpty(query.getStartTime())) {
+                        //发布时间 开始
+                        predicates.add(cb.greaterThan(root.get("createTime").as(Date.class), query.getStartTime()));
+                    }
+
+                    if(Util.isNotEmpty(query.getEndTime())) {
+                        //发布时间 结束
+                        Date endTime = query.getEndTime();
+                        predicates.add(cb.lessThan(root.get("createTime").as(Date.class), query.getEndTime()));
+                    }
+
+                    if(Util.isNotEmpty(query.getTags())) {
+                        //标签
+                        String[] tags = query.getTags().split(",");
+                        for(String tag : tags) {
+                            predicates.add(cb.like(root.get("tags").as(String.class), "%" + tag + "%"));
+                        }
+                    }
+                }
+                Predicate[] pres = new Predicate[predicates.size()];
+                return criteriaQuery.where(predicates.toArray(pres)).getGroupRestriction();
+            }
+        };
     }
 }
