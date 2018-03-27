@@ -54,4 +54,14 @@ public class ArticleQuery extends BaseQuery {
 		this.endTime = endTime;
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "ArticleQuery{" +
+				"title='" + title + '\'' +
+				", tags='" + tags + '\'' +
+				", startTime=" + startTime +
+				", endTime=" + endTime +
+				'}';
+	}
 }
