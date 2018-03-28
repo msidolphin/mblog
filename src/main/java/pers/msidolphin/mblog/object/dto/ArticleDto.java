@@ -12,7 +12,7 @@ import java.util.Date;
 @Setter
 public class ArticleDto{
 
-	private Long id;
+	private String id;
 
 	private String title;
 
@@ -22,7 +22,7 @@ public class ArticleDto{
 
 	private Integer comments;
 
-	protected Date createTime;	 //创建时间
+	protected String createTime;	 //创建时间
 
-	protected Date updateTime;	 //更新时间
+	protected String updateTime;	 //更新时间
 }

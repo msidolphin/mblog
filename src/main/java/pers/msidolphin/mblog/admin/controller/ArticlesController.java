@@ -54,8 +54,9 @@ public class ArticlesController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ServerResponse<?> delete(@PathVariable Long id) {
-		return null;
+	public ServerResponse<?> delete(@PathVariable String id) {
+		articleService.logicDelete(id);
+		return ServerResponse.response(ResponseCode.NO_CONTENT);
 	}
 
 }

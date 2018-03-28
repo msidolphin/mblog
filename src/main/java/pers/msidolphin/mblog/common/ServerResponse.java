@@ -39,6 +39,14 @@ public class ServerResponse<T> implements Serializable {
 
 	// Custom
 
+	public static <T> ServerResponse<T> response(ResponseCode responseCode, T data) {
+		return new ServerResponse<>(responseCode.getCode(), responseCode.getDescription(), data);
+	}
+
+	public static ServerResponse response(ResponseCode responseCode) {
+		return new ServerResponse(responseCode.getCode(), responseCode.getDescription());
+	}
+
 	public static <T> ServerResponse<T> response(Integer status, String message, T data) {
 		return new ServerResponse<>(status, message, data);
 	}

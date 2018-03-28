@@ -3,8 +3,6 @@ package pers.msidolphin.mblog.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -42,13 +39,14 @@ public class ArticleService {
     public PageInfo<ArticleDto> getArticles(ArticleQuery query) throws ParseException {
         Assert.notNull(query);
         //处理查询对象中的结束时间
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        if(query != null && query.getEndTime() != null) {
-            Date date = query.getEndTime();
-            String dateFormat = sdf.format(date);
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            dateFormat += " 23:59:59";
-            query.setEndTime(sdf.parse(dateFormat));
+        if(Util.isNotEmpty(query.getEndTime())) {
+            query.setEndTime(query.getEndTime() + " 23:59:59");
+        }
+        if(Util.isNotEmpty(query.getTags())) {
+            //将标签字符串转换为List
+            query.setTagList(Util.asList(query.getTags().split(",")));
+        }else {
+            query.setTags(null);
         }
         //设置分页参数
         PageHelper.startPage(query.getPageNum(), query.getPageSize());
@@ -69,7 +67,10 @@ public class ArticleService {
         if(Util.isEmpty(id)) {
             //新增操作
             article.setId(AutoIdHelper.getId());
-            tagService.saveTags(article.getTags().split(","));
+            //判断是否新增标签
+            if(Util.isNotEmpty(article.getTags())) {
+                tagService.saveTags(article.getTags().split(","));
+            }
         }else {
             //判断当前标签和原标签的差异
             List<String> originTags = Util.asList(originTagStr.split(","));
@@ -120,6 +121,17 @@ public class ArticleService {
         return null;
     }
 
+    /**
+     * 逻辑删除文章
+     * @param id 文章id
+     * @return
+     */
+    public int logicDelete(String id) {
+        return articleRepository.updateStatusById(1, id);
+    }
+
+
+    @Deprecated
     private Specification<Article> where(ArticleQuery query) {
         return new Specification<Article>() {
             @Nullable
@@ -137,13 +149,13 @@ public class ArticleService {
 
                     if(Util.isNotEmpty(query.getStartTime())) {
                         //发布时间 开始
-                        predicates.add(cb.greaterThan(root.get("createTime").as(Date.class), query.getStartTime()));
+                        //predicates.add(cb.greaterThan(root.get("createTime").as(Date.class), query.getStartTime()));
                     }
 
                     if(Util.isNotEmpty(query.getEndTime())) {
                         //发布时间 结束
-                        Date endTime = query.getEndTime();
-                        predicates.add(cb.lessThan(root.get("createTime").as(Date.class), query.getEndTime()));
+//                        Date endTime = query.getEndTime();
+//                        predicates.add(cb.lessThan(root.get("createTime").as(Date.class), query.getEndTime()));
                     }
 
                     if(Util.isNotEmpty(query.getTags())) {
