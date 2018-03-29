@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class ArticleQuery extends BaseQuery {
 
+	private String id;
+
 	private String title;
 
 	private String tags;
@@ -77,14 +79,12 @@ public class ArticleQuery extends BaseQuery {
 		return this;
 	}
 
-	@Override
-	public String toString() {
-		return "ArticleQuery{" +
-				"title='" + title + '\'' +
-				", tags='" + tags + '\'' +
-				", tagList=" + tagList +
-				", startTime=" + startTime +
-				", endTime=" + endTime +
-				'}';
+	public String getId() {
+		return id;
+	}
+
+	public ArticleQuery setId(String id) {
+		this.id = id;
+		return this;
 	}
 }

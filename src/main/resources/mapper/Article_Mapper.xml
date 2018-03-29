@@ -3,29 +3,30 @@
 <mapper namespace="pers.msidolphin.mblog.model.mapper.ArticleMapper">
 
     <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.ArticleDto" >
-        <id property="id" column="id" jdbcType="INTEGER" javaType="java.lang.String" />
-        <result property="title" column="title" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="userName" column="user_name" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="tags" column="tags" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="comments" column="comments" jdbcType="INTEGER" javaType="java.lang.Integer" />
-        <result property="createTime" column="create_time" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="updateTime" column="update_time" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <id     property="id"           column="id"            jdbcType="INTEGER" javaType="java.lang.String" />
+        <result property="title"        column="title"         jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="summary"      column="summary"       jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="thumbnail"    column="thumbnail"     jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="userName"     column="user_name"     jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="tags"         column="tags"          jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="commentCount" column="comment_count" jdbcType="INTEGER" javaType="java.lang.Integer" />
+        <result property="createTime"   column="create_time"   jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="updateTime"   column="update_time"   jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
-    <select id="findAll" parameterType="pers.msidolphin.mblog.object.query.ArticleQuery" resultMap="BaseResultMap">
+    <select id="findArticles" parameterType="pers.msidolphin.mblog.object.query.ArticleQuery" resultMap="BaseResultMap">
         SELECT
-            a.id id,
-            a.title title,
-           (select u.nickname from user u where u.id = a.creator) user_name,
-           ((select count(c.id) from comment c where c.article_id = a.id)
-            +
-            (select count(r.id) from replies r where r.comment_id = (select c.id from comment c where c.article_id = a.id))
-            ) comments,
-            a.tags,
-            DATE_FORMAT(a.create_time,'%Y-%m-%d %h:%i:%s') create_time,
-            DATE_FORMAT(a.update_time,'%Y-%m-%d %h:%i:%s') update_time
+        a.id id,
+        a.title title,
+        a.thumbnail,
+        a.summary,
+        (select u.nickname from user u where u.id = a.creator) user_name,
+        (SELECT count(0) cnum FROM comment c WHERE c.article_id = a.id) comment_count,
+        a.tags,
+        DATE_FORMAT(a.create_time,'%Y-%m-%d %h:%i:%s') create_time,
+        DATE_FORMAT(a.update_time,'%Y-%m-%d %h:%i:%s') update_time
         FROM article a WHERE 1 = 1 AND a.is_delete = 0
-            <if test="title != null">
+        <if test="title != null">
                 AND a.title LIKE #{title}
             </if>
             <if test="startTime != null">
@@ -38,6 +39,9 @@
                 <foreach collection="tagList" item="tag" >
                     AND find_in_set(#{tag}, a.tags)
                 </foreach>
+            </if>
+            <if test="id != null">
+                AND a.id = #{id}
             </if>
     </select>
 </mapper>

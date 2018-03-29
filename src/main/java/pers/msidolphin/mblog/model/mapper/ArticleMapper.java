@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface ArticleMapper {
 
-	List<ArticleDto> findAll(ArticleQuery query);
+	List<ArticleDto> findArticles(ArticleQuery query);
 }

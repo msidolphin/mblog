@@ -8,12 +8,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
+import pers.msidolphin.mblog.exception.ServiceException;
 import pers.msidolphin.mblog.helper.Assert;
 import pers.msidolphin.mblog.helper.AutoIdHelper;
 import pers.msidolphin.mblog.helper.Util;
 import pers.msidolphin.mblog.model.mapper.ArticleMapper;
 import pers.msidolphin.mblog.model.repository.ArticleRepository;
 import pers.msidolphin.mblog.object.dto.ArticleDto;
+import pers.msidolphin.mblog.object.dto.CommentDto;
 import pers.msidolphin.mblog.object.po.Article;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
 
@@ -36,6 +38,9 @@ public class ArticleService {
     @Autowired
     private TagService tagService;
 
+    @Autowired
+    private CommentService commentService;
+
     public PageInfo<ArticleDto> getArticles(ArticleQuery query) throws ParseException {
         Assert.notNull(query);
         //处理查询对象中的结束时间
@@ -50,7 +55,7 @@ public class ArticleService {
         }
         //设置分页参数
         PageHelper.startPage(query.getPageNum(), query.getPageSize());
-        List<ArticleDto> lists = articleMapper.findAll(query);
+        List<ArticleDto> lists = articleMapper.findArticles(query);
         return new PageInfo<>(lists);
     }
 
@@ -124,12 +129,39 @@ public class ArticleService {
     /**
      * 逻辑删除文章
      * @param id 文章id
-     * @return
+     * @return {int} 影响行数
      */
     public int logicDelete(String id) {
         return articleRepository.updateStatusById(1, id);
     }
 
+
+    /**
+     * 获取文章详情 包含评论信息
+     * @param id 文章id
+     * @return ArticleDto
+     */
+    public ArticleDto getArticleDetail(String id) {
+        Assert.notNull(id);
+        List<ArticleDto> articleDtos = articleMapper.findArticles(new ArticleQuery().setId(id));
+        ArticleDto articleDto = null;
+        if(Util.isNotEmpty(articleDtos) && articleDtos.size() == 1) {
+            articleDto = articleDtos.get(0);
+            //获取评论信息
+            PageInfo<CommentDto> comments = commentService.getComments(id);
+            //统计总回复数
+            int sum = 0;
+            for(CommentDto comment : comments.getList())  {
+                sum += comment.getReplyCount();
+            }
+            articleDto.setReplies(sum + articleDto.getCommentCount());
+            articleDto.setCommentList(comments);
+        }else {
+            //文章不存在
+            throw new ServiceException("文章不存在或返回多个文章记录");
+        }
+        return articleDto;
+    }
 
     @Deprecated
     private Specification<Article> where(ArticleQuery query) {

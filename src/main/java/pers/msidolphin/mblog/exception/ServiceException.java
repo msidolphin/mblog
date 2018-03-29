@@ -9,6 +9,10 @@ public class ServiceException extends AbstractApplicationException{
 
 	public ServiceException() {}
 
+	public ServiceException(String msg) {
+		super(msg);
+	}
+
 	public ServiceException(Throwable cause) {
 		this("业务异常", cause);
 	}

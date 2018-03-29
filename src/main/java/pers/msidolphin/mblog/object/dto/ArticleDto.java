@@ -1,9 +1,9 @@
 package pers.msidolphin.mblog.object.dto;
 
+import com.github.pagehelper.PageInfo;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
 
 /**
  * Created by msidolphin on 2018/3/27.
@@ -20,9 +20,22 @@ public class ArticleDto{
 
 	private String tags;
 
-	private Integer comments;
+	private String summary;
+
+	private String thumbnail;
+
+	//评论数
+	private Integer commentCount = 0;
+
+	//总回复数 = 评论数 + 回复数
+	private Integer replies = 0;
+
+	private Integer views;
+
+	private PageInfo<CommentDto> commentList;
 
 	protected String createTime;	 //创建时间
 
 	protected String updateTime;	 //更新时间
+
 }
