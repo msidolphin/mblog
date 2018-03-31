@@ -18,43 +18,6 @@ import java.util.regex.Pattern;
  */
 public class AvatarHelper {
 
-	public static void generateAvatar(String nickname, String path, String fileName) throws IOException {
-		if(nickname == null) {
-			return;
-		}
-		int width = 100;
-		int height = 100;
-		String text;
-		String first = nickname.substring(0, 1);
-		//如果不是中文则将首位英文字母转换为大写
-		if(!isChinese(first))	text = nickname.substring(0, 1).toUpperCase();
-		else text = first; //
-
-		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
-		//开启抗锯齿
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-		g2d.setBackground(getRandomColor());
-		g2d.clearRect(0, 0, width, height);
-		g2d.setPaint(Color.WHITE);
-
-		Font font = new Font("微软雅黑", Font.PLAIN, 60);
-		g2d.setFont(font);
-		FontMetrics fm = g2d.getFontMetrics(font);
-		int textWidth = fm.stringWidth(text);
-		int widthX = (width - textWidth) / 2;
-		g2d.drawString(text, widthX, font.getSize() + height / 10);
-
-		g2d.dispose();
-
-//		BufferedImage rounded = makeRoundedCorner(bufferedImage, 99);
-		File file = new File(path + File.separator + fileName + ".jpg");
-		ImageIO.write(bufferedImage, "png", file);
-
-	}
-
 	public static boolean isChinese(String test) {
 		String regEx = "[\\u4e00-\\u9fa5]";
 		Pattern pattern = Pattern.compile(regEx);
@@ -93,6 +56,44 @@ public class AvatarHelper {
 	}
 
 
+	public static String generateAvatar(String nickname, String path, String fileName) throws IOException {
+		if(nickname == null) {
+			return null;
+		}
+		int width = 100;
+		int height = 100;
+		String text;
+		String first = nickname.substring(0, 1);
+		//如果不是中文则将首位英文字母转换为大写
+		if(!isChinese(first))	text = nickname.substring(0, 1).toUpperCase();
+		else text = first; //
+
+		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
+		//开启抗锯齿
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+		g2d.setBackground(getRandomColor());
+		g2d.clearRect(0, 0, width, height);
+		g2d.setPaint(Color.WHITE);
+
+		Font font = new Font("微软雅黑", Font.PLAIN, 60);
+		g2d.setFont(font);
+		FontMetrics fm = g2d.getFontMetrics(font);
+		int textWidth = fm.stringWidth(text);
+		int widthX = (width - textWidth) / 2;
+		g2d.drawString(text, widthX, font.getSize() + height / 10);
+
+		g2d.dispose();
+
+//		BufferedImage rounded = makeRoundedCorner(bufferedImage, 99);
+		String temp = path + File.separator + fileName + ".jpg";
+		File file = new File(temp);
+		ImageIO.write(bufferedImage, "png", file);
+		return temp;
+	}
+
 	/**
 	 * 图片做圆角处理
 	 * @param image
@@ -112,13 +113,5 @@ public class AvatarHelper {
 		g2.drawImage(image, 0, 0, null);
 		g2.dispose();
 		return output;
-	}
-
-	public static void main(String[] args) {
-		try {
-			AvatarHelper.generateAvatar("杨", "e:", UUID.randomUUID().toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }
