@@ -42,7 +42,7 @@ public class CommentService {
 			PageHelper.startPage(1, 5, "r.create_time desc");
 			List<ReplyDto> repies = repliesMapper.findRepliesByCommentId(comment.getId());
 			PageInfo<ReplyDto> repiesInfo = new PageInfo<>(repies);
-			comment.setReples(repiesInfo);
+			comment.setReplies(repiesInfo);
 		}
 		return pageInfo;
 	}

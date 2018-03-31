@@ -41,11 +41,16 @@ public class JsonHelper {
 	 * @return String
 	 * @throws IOException
 	 */
-	public static String object2String(Object target) throws IOException {
-		if (target == null) {
-			return null;
+	public static String object2String(Object target) {
+		try {
+			if (target == null) {
+				return null;
+			}
+			return objectMapper.writeValueAsString(target);
+		}catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-		return objectMapper.writeValueAsString(target);
+
 	}
 
 	/**

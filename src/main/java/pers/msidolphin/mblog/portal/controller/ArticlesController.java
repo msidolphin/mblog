@@ -11,6 +11,7 @@ import pers.msidolphin.mblog.object.dto.ArticleDto;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
 import pers.msidolphin.mblog.service.ArticleService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 
 /**
@@ -41,7 +42,9 @@ public class ArticlesController {
 	 * @return ServerResponse<?>
 	 */
 	@GetMapping("/detail/{id}")
-	public ServerResponse<?> detail(@PathVariable String id) {
+	public ServerResponse<?> detail(HttpServletRequest request, @PathVariable String id) {
+		//处理文章访问量
+		articleService.articleViewsHandle(id, request);
 		return ServerResponse.success(articleService.getArticleDetail(id));
 	}
 }

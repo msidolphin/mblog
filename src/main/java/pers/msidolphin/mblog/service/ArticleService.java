@@ -2,16 +2,19 @@ package pers.msidolphin.mblog.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pers.msidolphin.mblog.common.enums.ArticleType;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.exception.ServiceException;
-import pers.msidolphin.mblog.helper.Assert;
-import pers.msidolphin.mblog.helper.AutoIdHelper;
-import pers.msidolphin.mblog.helper.Util;
+import pers.msidolphin.mblog.helper.*;
 import pers.msidolphin.mblog.model.mapper.ArticleMapper;
 import pers.msidolphin.mblog.model.repository.ArticleRepository;
 import pers.msidolphin.mblog.object.dto.ArticleDto;
@@ -23,11 +26,21 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.*;
 
 @Service
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ArticleService {
+
+    private static final Logger log = LoggerFactory.getLogger(ArticleService.class);
+
+    @Autowired
+    private RedisHelper redis;
+
+    @Autowired
+    private PropertiesHelper propertiesHelper;
 
     @Autowired
     private ArticleRepository articleRepository;
@@ -40,6 +53,9 @@ public class ArticleService {
 
     @Autowired
     private CommentService commentService;
+
+    private static final String DEFAULT_VIEWS_PREFIX = "articleViewsCache:";
+    private static final Long   DEFAULT_VIEWS_TIMEOUT = 900000L;
 
     public PageInfo<ArticleDto> getArticles(ArticleQuery query) throws ParseException {
         Assert.notNull(query);
@@ -146,7 +162,10 @@ public class ArticleService {
         List<ArticleDto> articleDtos = articleMapper.findArticles(new ArticleQuery().setId(id));
         ArticleDto articleDto = null;
         if(Util.isNotEmpty(articleDtos) && articleDtos.size() == 1) {
+
             articleDto = articleDtos.get(0);
+            //文章类型
+            articleDto.setTypeName(ArticleType.get(articleDto.getTypeCode()).getValue());
             //获取评论信息
             PageInfo<CommentDto> comments = commentService.getComments(id);
             //统计总回复数
@@ -161,6 +180,31 @@ public class ArticleService {
             throw new ServiceException("文章不存在或返回多个文章记录");
         }
         return articleDto;
+    }
+
+    public boolean articleViewsHandle(String id, HttpServletRequest request) {
+
+        String viewsPrefix = propertiesHelper.getValue("blog.article.ip.cache.prefix");
+
+        Long viewsTimeout = propertiesHelper.getLong("blog.article.ip.cache.timeout");
+
+        if(viewsPrefix == null) viewsPrefix = DEFAULT_VIEWS_PREFIX;
+        if(viewsTimeout == null) viewsTimeout = DEFAULT_VIEWS_TIMEOUT;
+
+        //获取ip地址
+        String ipAddr = IpAddressHelper.getIpAddress(request);
+        log.info("ip地址为{}的游客访问了文章{}", ipAddr, id);
+        //从redis中获取ip地址对应的访问列表
+        if(redis.getValue(viewsPrefix + ipAddr + id) == null) {
+            //文章阅览数自增1
+            articleRepository.incrementsViewsById(id);
+            //文章阅览数新增一条
+            redis.setValue(viewsPrefix + ipAddr + id,
+                    JsonHelper.object2String(true), viewsTimeout);
+        }else {
+            return false;
+        }
+        return true;
     }
 
     @Deprecated

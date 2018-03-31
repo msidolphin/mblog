@@ -5,9 +5,12 @@
     <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.ArticleDto" >
         <id     property="id"           column="id"            jdbcType="INTEGER" javaType="java.lang.String" />
         <result property="title"        column="title"         jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="content"      column="title"         jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="typeCode"     column="type"          jdbcType="INTEGER" javaType="java.lang.Integer"/>
         <result property="summary"      column="summary"       jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="thumbnail"    column="thumbnail"     jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="userName"     column="user_name"     jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="author"       column="user_name"     jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="views"        column="views"         jdbcType="INTEGER" javaType="java.lang.Integer" />
         <result property="tags"         column="tags"          jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="commentCount" column="comment_count" jdbcType="INTEGER" javaType="java.lang.Integer" />
         <result property="createTime"   column="create_time"   jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -17,6 +20,9 @@
     <select id="findArticles" parameterType="pers.msidolphin.mblog.object.query.ArticleQuery" resultMap="BaseResultMap">
         SELECT
         a.id id,
+        a.content,
+        a.type,
+        a.views,
         a.title title,
         a.thumbnail,
         a.summary,

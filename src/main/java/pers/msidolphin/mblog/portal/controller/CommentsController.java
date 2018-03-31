@@ -9,4 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("portalCommentsController")
 @RequestMapping("/comments")
 public class CommentsController {
+
+
+
+
 }

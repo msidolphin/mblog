@@ -21,7 +21,7 @@ public class CommentDto {
 
 	private String createTime;
 
-	private PageInfo<ReplyDto> reples;
+	private PageInfo<ReplyDto> replies;
 
 	private Integer replyCount = 0;
 

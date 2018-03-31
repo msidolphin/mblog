@@ -1,6 +1,5 @@
 package pers.msidolphin.mblog.model.repository;
 
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -15,4 +14,9 @@ public interface ArticleRepository extends CrudRepository<Article, Long> {
 	@Modifying(clearAutomatically = true)
 	@Query(value = "update article a set a.is_delete = ?1 where a.id = ?2", nativeQuery = true)
 	int updateStatusById(int status, String id);
+
+	@Transactional
+	@Modifying(clearAutomatically = true)
+	@Query(value = "update article a set a.views = a.views + 1 where a.id = ?1", nativeQuery = true)
+	int incrementsViewsById(String id);
 }

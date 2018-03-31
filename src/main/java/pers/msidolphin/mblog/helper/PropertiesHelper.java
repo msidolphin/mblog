@@ -2,6 +2,7 @@ package pers.msidolphin.mblog.helper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import pers.msidolphin.mblog.exception.AbstractApplicationException;
 
 import java.io.File;
@@ -24,7 +25,7 @@ public class PropertiesHelper {
 	//默认资源路径
 	private static String resourceLocation 		= 	null;
 
-	private static String defaultLocation 		= 	StringHelper.getResourcePathInClasspath("system.properties");
+	private static String defaultLocation 		= 	"classpath:system.properties";
 
 	/**
 	 * 设置资源文件路径，重新加载资源文件
@@ -53,5 +54,13 @@ public class PropertiesHelper {
 			return null;
 		}
 		return properties.getProperty(key);
+	}
+
+	public static Long getLong(String key) {
+		if(StringHelper.isBlank(key)) {
+			return null;
+		}
+		System.out.println("value:" + properties.getProperty("blog.article.ip.cache.prefix"));
+		return Long.parseLong(properties.getProperty(key));
 	}
 }
