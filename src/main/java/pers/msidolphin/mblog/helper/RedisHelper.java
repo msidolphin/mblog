@@ -37,7 +37,7 @@ public class RedisHelper {
 		return this;
 	}
 
-	public Object getValue(String key) {
+	public String getValue(String key) {
 		return redisTemplate.opsForValue().get(key);
 	}
 

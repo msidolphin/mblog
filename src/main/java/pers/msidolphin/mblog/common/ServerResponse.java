@@ -27,6 +27,10 @@ public class ServerResponse<T> implements Serializable {
 
 	public ServerResponse() {}
 
+	public ServerResponse(ResponseCode responseCode) {
+		this(responseCode.getCode(), responseCode.getDescription());
+	}
+
 	public ServerResponse(Integer status, String message) {
 		this(status, message, null);
 	}
@@ -78,6 +82,10 @@ public class ServerResponse<T> implements Serializable {
 		return new ServerResponse(ResponseCode.BAD_REQUEST.getCode(), msg);
 	}
 
+	public static <T> ServerResponse<T> badRequest(String msg, T data) {
+		return new ServerResponse<>(ResponseCode.BAD_REQUEST.getCode(), msg, data);
+	}
+
 	// Internal Server Error
 	public static ServerResponse internalError() {
 		return new ServerResponse(ResponseCode.INTERNAL_SERVER_ERROR.getCode(), ResponseCode.INTERNAL_SERVER_ERROR.getDescription());
@@ -103,6 +111,11 @@ public class ServerResponse<T> implements Serializable {
 
 	public static ServerResponse forbidden(String msg) {
 		return new ServerResponse(ResponseCode.FORBIDDEN.getCode(), msg);
+	}
+
+	//conflict
+	public static ServerResponse conflict() {
+		return new ServerResponse(ResponseCode.CONFLICT);
 	}
 
 	@Override
