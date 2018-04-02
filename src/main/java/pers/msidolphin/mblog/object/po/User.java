@@ -2,11 +2,13 @@ package pers.msidolphin.mblog.object.po;
 
 import lombok.Getter;
 import lombok.Setter;
+import pers.msidolphin.mblog.common.annotation.Validation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 /**
@@ -15,12 +17,14 @@ import java.util.Date;
  */
 @Entity @Getter @Setter
 @Table(name = "user", schema = "mblog")
+@Validation
 public class User extends BasePo{
 
 	@Id
 	private Long id;			//主键
 
 	@Column(name = "username")
+	@NotEmpty(message = "用户名不能为空")
 	private String username;	//用户名
 
 	@Column(name = "password")
@@ -39,6 +43,7 @@ public class User extends BasePo{
 	private String avatar;		//头像
 
 	@Column(name = "email")
+	@NotEmpty(message = "电子邮箱不能为空")
 	private String email;		//电子邮箱
 
 	@Column(name = "phone")

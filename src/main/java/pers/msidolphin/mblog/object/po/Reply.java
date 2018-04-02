@@ -2,11 +2,14 @@ package pers.msidolphin.mblog.object.po;
 
 import lombok.Getter;
 import lombok.Setter;
+import pers.msidolphin.mblog.common.annotation.Validation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * 回复实体类
@@ -15,6 +18,7 @@ import javax.persistence.Table;
 @Entity
 @Setter @Getter
 @Table(name = "replies", schema = "mblog")
+@Validation
 public class Reply extends BasePo{
 
 	@Id
@@ -22,12 +26,18 @@ public class Reply extends BasePo{
 	private Long id;				//主键
 
 	@Column(name = "comment_id")
+	@NotNull(message = "所属文章id不能为空")
 	private Integer commentId;		//所属文章id
 
 	@Column(name = "user_id")
-	private Integer userId;			//用户id
+	private Long userId;			//用户id
+
+	@Column(name = "to_user_id")
+	@NotNull(message = "回复对象id不能为空")
+	private Long toUserId;			//回复对象id
 
 	@Column(name = "content")
+	@NotEmpty(message = "评论内容不能为空")
 	private String content;			//评论内容
 
 	@Column(name = "status")

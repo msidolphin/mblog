@@ -31,14 +31,16 @@ public class HttpInterceptor implements HandlerInterceptor {
 		//检查cookie中是否携带session key
 		Cookie[] cookies = request.getCookies();
 		String key = null;
-		for(Cookie cookie : cookies) {
-			if (propertiesHelper.getValue("blog.user.session.key").equals(cookie.getName()))
-				key = cookie.getValue();
-		}
-		if (key != null) {
-			//当cookie中携带了session key
-			String userJson = redisHelper.getValue(key);
-			RequestHolder.add(JsonHelper.string2Object(userJson, User.class));
+		if (cookies != null) {
+			for(Cookie cookie : cookies) {
+				if (propertiesHelper.getValue("blog.user.session.key").equals(cookie.getName()))
+					key = cookie.getValue();
+			}
+			if (key != null) {
+				//当cookie中携带了session key
+				String userJson = redisHelper.getValue(key);
+				RequestHolder.add(JsonHelper.string2Object(userJson, User.class));
+			}
 		}
 		RequestHolder.add(request);
 		return true;

@@ -2,8 +2,10 @@ package pers.msidolphin.mblog.object.po;
 
 import lombok.Getter;
 import lombok.Setter;
+import pers.msidolphin.mblog.common.annotation.Validation;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
  */
 @Entity @Getter @Setter
 @Table(name = "article", schema = "mblog")
+@Validation
 public class Article {
 
 	@Id
@@ -19,6 +22,7 @@ public class Article {
 	private Long id;			 //主键
 
 	@Column(name = "title")
+	@NotEmpty(message = "文章标题不能为空")
 	private String title;		 //文章标题
 
 	@Column(name = "thumbnail")
@@ -31,9 +35,11 @@ public class Article {
 	private Integer type;		 //文章类型 0-原创 1-转载 2-翻译
 
 	@Column(name = "content")
+	@NotEmpty(message = "文章内容不能为空")
 	private String content;      //文章内容
 
 	@Column(name = "tags")
+	@NotEmpty(message = "文章标签不能为空")
 	private String tags;		 //标签字符串
 
 	@Column(name = "is_delete")

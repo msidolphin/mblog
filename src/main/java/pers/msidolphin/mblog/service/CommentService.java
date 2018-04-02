@@ -7,16 +7,19 @@ import org.springframework.stereotype.Service;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
 import pers.msidolphin.mblog.helper.Assert;
+import pers.msidolphin.mblog.helper.AutoIdHelper;
 import pers.msidolphin.mblog.helper.BeanValidatorHelper;
 import pers.msidolphin.mblog.helper.RequestHolder;
 import pers.msidolphin.mblog.model.mapper.CommentMapper;
 import pers.msidolphin.mblog.model.mapper.RepliesMapper;
+import pers.msidolphin.mblog.model.repository.CommentRepository;
 import pers.msidolphin.mblog.object.dto.CommentDto;
 import pers.msidolphin.mblog.object.dto.ReplyDto;
 import pers.msidolphin.mblog.object.po.Comment;
 import pers.msidolphin.mblog.object.po.User;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +31,9 @@ public class CommentService extends BaseService{
 
 	@Autowired
 	private CommentMapper commentMapper;
+
+	@Autowired
+	private CommentRepository commentRepository;
 
 	@Autowired
 	private RepliesMapper repliesMapper;
@@ -54,18 +60,34 @@ public class CommentService extends BaseService{
 		return pageInfo;
 	}
 
+	/**
+	 * 新增评论
+	 * @param comment
+	 * @return
+	 */
 	public ServerResponse<?> addComment(Comment comment) {
-		Map<String, String> validateRes = BeanValidatorHelper.validate(comment);
-		if (!validateRes.isEmpty()) {
-			return ServerResponse.badRequest(ResponseCode.BAD_REQUEST.getDescription(), validateRes);
-		}
+		//评论人
 		User user = RequestHolder.getCurrentUser();
 		if (user == null) {
 			return ServerResponse.unauthorized();
 		}
+		//主键
+		comment.setId(AutoIdHelper.getId());
+		//评论人id
+		comment.setUserId(user.getId());
+		//创建时间
+		comment.setCreateTime(new Date());
+		//修改时间
+		comment.setUpdateTime(new Date());
+		//点赞数
+		comment.setVote(0);
+		//状态
+		comment.setStatus(0);
 
+		//保存
+		commentRepository.save(comment);
 
-		return null;
+		return ServerResponse.success(comment);
 	}
 
 }

@@ -2,6 +2,7 @@ package pers.msidolphin.mblog.object.po;
 
 import lombok.Getter;
 import lombok.Setter;
+import pers.msidolphin.mblog.common.annotation.Validation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

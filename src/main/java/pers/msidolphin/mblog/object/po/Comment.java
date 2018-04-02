@@ -2,6 +2,7 @@ package pers.msidolphin.mblog.object.po;
 
 import lombok.Getter;
 import lombok.Setter;
+import pers.msidolphin.mblog.common.annotation.Validation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity @Getter @Setter
 @Table(name = "comment", schema = "mblog")
+@Validation
 public class Comment extends BasePo{
 
 	@Id
@@ -27,7 +29,7 @@ public class Comment extends BasePo{
 	private Integer articleId;		//所属文章id
 
 	@Column(name = "user_id")
-	private Integer userId;			//用户id
+	private Long userId;			//用户id
 
 	@Column(name = "content")
 	@NotEmpty(message = "评论内容不能为空")
