@@ -93,6 +93,7 @@ public class UserService {
 
 		//新增用户
 		user.setId(AutoIdHelper.getId());
+		user.setNickname(user.getUsername());
 		user.setCreateTime(new Date());
 		user.setUpdateTime(new Date());
 		//随机生成头像并上传头像
@@ -128,6 +129,9 @@ public class UserService {
 				propertiesHelper.getLong("blog.user.session,timeout"));
 		//将session id写回到cookie
 		Cookie cookie = new Cookie(propertiesHelper.getValue("blog.user.session.key"), session.getId());
+		//更新当前用户
+		RequestHolder.removeCurrentUser();
+		RequestHolder.add(user);
 		response.addCookie(cookie);
 	}
 }

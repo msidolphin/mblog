@@ -25,8 +25,8 @@ public class Comment extends BasePo{
 	private Long id;				//主键
 
 	@Column(name = "article_id")
-	@NotNull(message = "文章id不能为空")
-	private Integer articleId;		//所属文章id
+	@NotEmpty(message = "文章id不能为空")
+	private String articleId;		//所属文章id
 
 	@Column(name = "user_id")
 	private Long userId;			//用户id
@@ -41,4 +41,15 @@ public class Comment extends BasePo{
 	@Column(name = "vote")
 	private Integer vote;			//点赞数
 
+	@Override
+	public String toString() {
+		return "Comment{" +
+				"id=" + id +
+				", articleId='" + articleId + '\'' +
+				", userId=" + userId +
+				", content='" + content + '\'' +
+				", status=" + status +
+				", vote=" + vote +
+				'}';
+	}
 }

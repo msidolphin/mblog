@@ -167,7 +167,7 @@ public class ArticleService {
             //文章类型
             articleDto.setTypeName(ArticleType.get(articleDto.getTypeCode()).getValue());
             //获取评论信息
-            PageInfo<CommentDto> comments = commentService.getComments(id);
+            PageInfo<CommentDto> comments = commentService.getComments(id, 10, 1);
             //统计总回复数
             int sum = 0;
             for(CommentDto comment : comments.getList())  {

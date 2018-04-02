@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
-import pers.msidolphin.mblog.helper.Assert;
-import pers.msidolphin.mblog.helper.AutoIdHelper;
-import pers.msidolphin.mblog.helper.BeanValidatorHelper;
-import pers.msidolphin.mblog.helper.RequestHolder;
+import pers.msidolphin.mblog.helper.*;
 import pers.msidolphin.mblog.model.mapper.CommentMapper;
 import pers.msidolphin.mblog.model.mapper.RepliesMapper;
 import pers.msidolphin.mblog.model.repository.CommentRepository;
@@ -38,25 +35,33 @@ public class CommentService extends BaseService{
 	@Autowired
 	private RepliesMapper repliesMapper;
 
+	@Autowired
+	private PropertiesHelper propertiesHelper;
+
+	@Autowired
+	private RepliesService repliesService;
+
 	/**
 	 * 根据文章id获取评论列表
 	 * @param articleId 文章id
 	 * @return {List} 评论列表
 	 */
-	public PageInfo<CommentDto> getComments(String articleId) {
+	public PageInfo<CommentDto> getComments(String articleId, Integer pageSize, Integer pageNum) {
 		Assert.notNull(articleId);
 		//评论分页
-		PageHelper.startPage(1, 10, "c.create_time desc");
+		PageHelper.startPage(pageNum, pageSize, "c.create_time desc");
 		List<CommentDto> comments = commentMapper.findCommentsByArticleId(articleId);
 		PageInfo<CommentDto> pageInfo = new PageInfo<>(comments);
 		//获取评论回复
 		for(CommentDto comment : pageInfo.getList()) {
-			//回复分页
-			PageHelper.startPage(1, 5, "r.create_time desc");
-			List<ReplyDto> repies = repliesMapper.findRepliesByCommentId(comment.getId());
-			PageInfo<ReplyDto> repiesInfo = new PageInfo<>(repies);
-			comment.setReplies(repiesInfo);
+			//设置用户头像地址 图片服务器+路径
+			comment.getUser().setAvatar(
+					propertiesHelper.getValue("blog.image.server") + comment.getUser().getAvatar());
+			PageInfo<ReplyDto> replies = repliesService.getReplies(comment.getId(), 5, 1);
+			comment.setReplies(replies);
 		}
+
+
 		return pageInfo;
 	}
 

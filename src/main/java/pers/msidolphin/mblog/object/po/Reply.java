@@ -27,14 +27,14 @@ public class Reply extends BasePo{
 
 	@Column(name = "comment_id")
 	@NotNull(message = "所属文章id不能为空")
-	private Integer commentId;		//所属文章id
+	private String commentId;		//所属文章id
 
 	@Column(name = "user_id")
-	private Long userId;			//用户id
+	private String userId;			//用户id
 
 	@Column(name = "to_user_id")
 	@NotNull(message = "回复对象id不能为空")
-	private Long toUserId;			//回复对象id
+	private String toUserId;			//回复对象id
 
 	@Column(name = "content")
 	@NotEmpty(message = "评论内容不能为空")

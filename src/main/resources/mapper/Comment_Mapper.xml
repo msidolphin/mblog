@@ -8,7 +8,7 @@
         <result property="replyCount"    column="reply_count" jdbcType="INTEGER" javaType="java.lang.Integer"/>
         <result property="content"       column="content"     jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="createTime"    column="create_time" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="user.id"       column="id"          jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="user.id"       column="user_id"          jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="user.nickname" column="nickname"    jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="user.username" column="username"    jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="user.email"    column="email"       jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -26,7 +26,7 @@
             u.website website,
             (SELECT count(0) cnum FROM replies r WHERE r.comment_id = c.id) reply_count,
             u.avatar avatar,
-            u.id userId,
+            u.id user_id,
             c.content content,
             DATE_FORMAT(c.create_time,'%Y-%m-%d %h:%i:%s') create_time
         FROM comment c LEFT JOIN user u on c.user_id = u.id where c.article_id = #{id}
