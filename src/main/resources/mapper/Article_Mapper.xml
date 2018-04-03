@@ -5,7 +5,7 @@
     <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.ArticleDto" >
         <id     property="id"           column="id"            jdbcType="INTEGER" javaType="java.lang.String" />
         <result property="title"        column="title"         jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="content"      column="title"         jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="content"      column="content"         jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="typeCode"     column="type"          jdbcType="INTEGER" javaType="java.lang.Integer"/>
         <result property="summary"      column="summary"       jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="thumbnail"    column="thumbnail"     jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -29,8 +29,8 @@
         (select u.nickname from user u where u.id = a.creator) user_name,
         (SELECT count(0) cnum FROM comment c WHERE c.article_id = a.id) comment_count,
         a.tags,
-        DATE_FORMAT(a.create_time,'%Y-%m-%d %h:%i:%s') create_time,
-        DATE_FORMAT(a.update_time,'%Y-%m-%d %h:%i:%s') update_time
+        DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+        DATE_FORMAT(a.update_time,'%Y-%m-%d %H:%i:%s') update_time
         FROM article a WHERE 1 = 1 AND a.is_delete = 0
         <if test="title != null">
                 AND a.title LIKE #{title}
@@ -50,4 +50,30 @@
                 AND a.id = #{id}
             </if>
     </select>
+    
+    <update id="updateById" parameterType="pers.msidolphin.mblog.object.po.Article">
+        UPDATE article
+          <set>
+            <if test="tags != null">
+                tags = #{tags},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="summary != null">
+                summary = #{summary},
+            </if>
+            <if test="thumbnail != null">
+                thumbnail = #{thumbnail},
+            </if>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+              update_time = now()
+          </set>
+            WHERE id = #{id}
+    </update>
 </mapper>

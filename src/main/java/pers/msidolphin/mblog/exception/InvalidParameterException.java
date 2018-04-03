@@ -8,12 +8,12 @@ import java.util.Map;
 @SuppressWarnings("ALL")
 public class InvalidParameterException extends AbstractApplicationException {
 
-    private Map<String, String> validateResult;
+    private Object validateResult;
 
     public InvalidParameterException() {
     }
 
-    public InvalidParameterException(String message, Map<String, String> validateResult) {
+    public InvalidParameterException(String message, Object validateResult) {
         super(message);
         this.validateResult = validateResult;
     }
@@ -22,7 +22,7 @@ public class InvalidParameterException extends AbstractApplicationException {
         super(message);
     }
 
-    public Map<String, String> getValidateResult() {
+    public Object getValidateResult() {
         return validateResult;
     }
 }

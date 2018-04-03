@@ -3,10 +3,9 @@ package pers.msidolphin.mblog.helper;
 import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -232,6 +231,21 @@ public class FileHelper {
 		
 		for(String path : maps.keySet()) {
 			System.out.println(path + ": " + maps.get(path));
+		}
+	}
+
+	public static void transfer(MultipartFile multipartFile, File file) throws IOException {
+		BufferedOutputStream bufferedOutputStream = null;
+		try {
+		bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
+			byte[] bytes = multipartFile.getBytes();
+			bufferedOutputStream.write(bytes);
+		}catch (Exception e) {
+			throw new RuntimeException(e);
+		}finally {
+			if (bufferedOutputStream != null) {
+				bufferedOutputStream.close();
+			}
 		}
 	}
 }

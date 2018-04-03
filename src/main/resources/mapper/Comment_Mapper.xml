@@ -31,4 +31,41 @@
             DATE_FORMAT(c.create_time,'%Y-%m-%d %h:%i:%s') create_time
         FROM comment c LEFT JOIN user u on c.user_id = u.id where c.article_id = #{id}
     </select>
+
+    <select id="findComments" parameterType="pers.msidolphin.mblog.object.query.CommentQuery" resultType="pers.msidolphin.mblog.object.dto.AdminCommentDto">
+        SELECT c.* FROM (
+        SELECT
+            0 type,
+            c.id,
+            c.content,
+            (SELECT a.title FROM article a where a.id = c.article_id) title,
+            u.username, u.email,u.website,c.create_time,c.status
+        from comment c left join user u on c.user_id = u.id
+        union all
+        SELECT
+            1 type,
+            r.id,
+            r.content,
+            (SELECT a.title FROM article a where a.id = (select c.article_id from comment c where c.id = r.comment_id)) title,
+            u.username, u.email,u.website,r.create_time,r.status
+        from replies r left join user u on r.user_id = u.id) c
+        <where>
+            <if test="title != null">
+                and t.title like #{title}
+            </if>
+            <if test="username != null">
+                and t.username like #{username}
+            </if>
+            <if test="content != null">
+                and t.content like #{content}
+            </if>
+            <if test="startTime != null">
+                and t.create_time <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null">
+                and t.create_time  <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        order by c.create_time desc
+</select>
 </mapper>

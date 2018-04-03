@@ -19,4 +19,5 @@ public interface ArticleRepository extends CrudRepository<Article, Long> {
 	@Modifying(clearAutomatically = true)
 	@Query(value = "update article a set a.views = a.views + 1 where a.id = ?1", nativeQuery = true)
 	int incrementsViewsById(String id);
+
 }

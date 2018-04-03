@@ -10,10 +10,12 @@ import pers.msidolphin.mblog.helper.*;
 import pers.msidolphin.mblog.model.mapper.CommentMapper;
 import pers.msidolphin.mblog.model.mapper.RepliesMapper;
 import pers.msidolphin.mblog.model.repository.CommentRepository;
+import pers.msidolphin.mblog.object.dto.AdminCommentDto;
 import pers.msidolphin.mblog.object.dto.CommentDto;
 import pers.msidolphin.mblog.object.dto.ReplyDto;
 import pers.msidolphin.mblog.object.po.Comment;
 import pers.msidolphin.mblog.object.po.User;
+import pers.msidolphin.mblog.object.query.CommentQuery;
 
 import javax.servlet.http.HttpSession;
 import java.util.Date;
@@ -60,8 +62,12 @@ public class CommentService extends BaseService{
 			PageInfo<ReplyDto> replies = repliesService.getReplies(comment.getId(), 5, 1);
 			comment.setReplies(replies);
 		}
+		return pageInfo;
+	}
 
-
+	public PageInfo<AdminCommentDto> findComments(CommentQuery query) {
+		PageHelper.startPage(query.getPageNum(), query.getPageSize());
+		PageInfo<AdminCommentDto> pageInfo = new PageInfo<>(commentMapper.findComments(query));
 		return pageInfo;
 	}
 

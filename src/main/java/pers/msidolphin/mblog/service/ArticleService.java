@@ -70,7 +70,7 @@ public class ArticleService {
             query.setTags(null);
         }
         //设置分页参数
-        PageHelper.startPage(query.getPageNum(), query.getPageSize());
+        PageHelper.startPage(query.getPageNum(), query.getPageSize(), "a.create_time desc");
         List<ArticleDto> lists = articleMapper.findArticles(query);
         return new PageInfo<>(lists);
     }
@@ -92,6 +92,20 @@ public class ArticleService {
             if(Util.isNotEmpty(article.getTags())) {
                 tagService.saveTags(article.getTags().split(","));
             }
+            //TODO
+            article.setCreator(1L);
+            article.setUpdator(1L);
+            article.setUpdateTime(new Date());
+            article.setCreateTime(new Date());
+            article.setCid(null);
+            article.setIsDelete(0);
+            article.setViews(0);
+            article.setVote(0);
+            article.setSummary("");
+            System.out.println(article);
+            //====
+            //保存文章
+            articleRepository.save(article);
         }else {
             //判断当前标签和原标签的差异
             List<String> originTags = Util.asList(originTagStr.split(","));
@@ -109,20 +123,8 @@ public class ArticleService {
                 //新增的
                 tagService.saveTags(adds);
             }
+            articleMapper.updateById(article);
         }
-        //TODO
-        article.setCreator(1L);
-        article.setUpdator(1L);
-        article.setUpdateTime(new Date());
-        article.setCreateTime(new Date());
-        article.setViews(0);
-        article.setVote(0);
-        article.setCid(null);
-        article.setSummary("");
-        System.out.println(article);
-        //====
-        //保存文章
-        articleRepository.save(article);
         return article;
     }
 
@@ -153,6 +155,16 @@ public class ArticleService {
 
 
     /**
+     * 物理删除文章
+     * @param id 文章id
+     */
+    public void delete(String id) {
+        if(Util.isEmpty(id)) throw new InvalidParameterException("文章id不能为空");
+        articleRepository.deleteById(Long.parseLong(id));
+    }
+
+
+    /**
      * 获取文章详情 包含评论信息
      * @param id 文章id
      * @return ArticleDto
@@ -161,6 +173,7 @@ public class ArticleService {
         Assert.notNull(id);
         List<ArticleDto> articleDtos = articleMapper.findArticles(new ArticleQuery().setId(id));
         ArticleDto articleDto = null;
+        System.out.println(articleDtos.size());
         if(Util.isNotEmpty(articleDtos) && articleDtos.size() == 1) {
 
             articleDto = articleDtos.get(0);

@@ -1,6 +1,8 @@
 package pers.msidolphin.mblog.model.mapper;
 
+import pers.msidolphin.mblog.object.dto.AdminCommentDto;
 import pers.msidolphin.mblog.object.dto.CommentDto;
+import pers.msidolphin.mblog.object.query.CommentQuery;
 
 import java.util.List;
 
@@ -10,4 +12,6 @@ import java.util.List;
 public interface CommentMapper {
 
 	List<CommentDto> findCommentsByArticleId(String id);
+
+	List<AdminCommentDto> findComments(CommentQuery query);
 }

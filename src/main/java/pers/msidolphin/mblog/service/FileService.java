@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import pers.msidolphin.mblog.exception.ServiceException;
 import pers.msidolphin.mblog.helper.FileHelper;
 import pers.msidolphin.mblog.helper.MD5Helper;
 import pers.msidolphin.mblog.helper.PropertiesHelper;
@@ -34,7 +36,7 @@ public class FileService {
 	@Autowired
 	private ServletContext servletContext;
 
-	public String uploadImage(MultipartFile multipartFile) throws IOException {
+	public String uploadImage(MultipartFile multipartFile) {
 		String fileName   = multipartFile.getOriginalFilename();
 		String extName    = fileName.substring(fileName.lastIndexOf(".") + 1);
 		String uploadName = MD5Helper.md5EncodeWithUtf8(fileName) + "." + extName;
@@ -45,10 +47,11 @@ public class FileService {
 			tmpFile.setWritable(true);
 			tmpFile.mkdirs();
 		}
-		File file = new File(tmpdir + uploadName);
+
+		File file = new File(tmpFile.getAbsolutePath() + "/" + uploadName);
 		String remoteFilePath = null;
 		try {
-			multipartFile.transferTo(file);
+			FileHelper.transfer(multipartFile, file);
 			logger.info("上传文件{}, 上传路径{}, 上传文件名{}", fileName, tmpdir + uploadName, uploadName);
 			//上传到FTP服务器
 			Map<String, File> fileMap = new HashMap<>();
@@ -58,8 +61,8 @@ public class FileService {
 			//把文件从upload目录删除
 			file.delete();
 			logger.info("文件{}已从{}目录下删除", uploadName, tmpdir + uploadName);
-		}catch (IllegalStateException e) {
-
+		}catch (Exception e) {
+			throw new ServiceException(e);
 		}
 
 		return remoteFilePath;

@@ -1,6 +1,7 @@
 package pers.msidolphin.mblog.model.mapper;
 
 import pers.msidolphin.mblog.object.dto.ArticleDto;
+import pers.msidolphin.mblog.object.po.Article;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
 
 import java.util.List;
@@ -11,4 +12,6 @@ import java.util.List;
 public interface ArticleMapper {
 
 	List<ArticleDto> findArticles(ArticleQuery query);
+
+	int updateById(Article article);
 }

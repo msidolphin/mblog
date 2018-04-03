@@ -2,10 +2,7 @@ package pers.msidolphin.mblog.portal.controller;
 
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.object.dto.ArticleDto;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
@@ -47,4 +44,8 @@ public class ArticlesController {
 		articleService.articleViewsHandle(id, request);
 		return ServerResponse.success(articleService.getArticleDetail(id));
 	}
+
+
+
+
 }

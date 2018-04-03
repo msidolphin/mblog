@@ -31,13 +31,15 @@ public class ValidateAspect {
 	public void validate(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		for(Object arg : args) {
-			Validation validation = arg.getClass().getAnnotation(Validation.class);
-			if(validation != null) {
-				log.info("{}开始进行参数校验...", arg);
-				Map<String, String> validateRes = BeanValidatorHelper.validate(arg);
-				if(!validateRes.isEmpty()) {
-					log.warn("{}参数校验失败", arg);
-					throw new InvalidParameterException("parameter invalidate", validateRes);
+			if(arg != null) {
+				Validation validation = arg.getClass().getAnnotation(Validation.class);
+				if(validation != null) {
+					log.info("{}开始进行参数校验...", arg);
+					Map<String, String> validateRes = BeanValidatorHelper.validate(arg);
+					if(!validateRes.isEmpty()) {
+						log.warn("{}参数校验失败", arg);
+						throw new InvalidParameterException("parameter invalidate", validateRes);
+					}
 				}
 			}
 		}

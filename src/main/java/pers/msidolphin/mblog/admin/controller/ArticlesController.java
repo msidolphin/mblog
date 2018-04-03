@@ -17,6 +17,7 @@ import java.text.ParseException;
  */
 @RestController
 @RequestMapping("/admin/articles")
+@SuppressWarnings("ALL")
 public class ArticlesController {
 
 	@Autowired
@@ -39,11 +40,6 @@ public class ArticlesController {
 		}
 	}
 
-	@PutMapping("")
-	public ServerResponse<?> save() {
-		return null;
-	}
-
 	@GetMapping("/{id}")
 	public ServerResponse<?> get(@PathVariable  Long id) {
 		Article article = articleService.getArticle(id);
@@ -53,9 +49,25 @@ public class ArticlesController {
 		return ServerResponse.response(ResponseCode.NOT_FOUND.getCode(), ResponseCode.NOT_FOUND.getDescription());
 	}
 
-	@DeleteMapping("/{id}")
-	public ServerResponse<?> delete(@PathVariable String id) {
+	/**
+	 * 逻辑删除文章
+	 * @param id 文章id
+	 * @return
+	 */
+	@PutMapping("")
+	public ServerResponse<?> logicDelete(String id) {
 		articleService.logicDelete(id);
+		return ServerResponse.response(ResponseCode.NO_CONTENT);
+	}
+
+	/**
+	 * 物理删除文章
+	 * @param id
+	 * @return
+	 */
+	@DeleteMapping("")
+	public ServerResponse<?> delete(String id) {
+		articleService.delete(id);
 		return ServerResponse.response(ResponseCode.NO_CONTENT);
 	}
 
