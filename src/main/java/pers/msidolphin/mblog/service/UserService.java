@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
+import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.exception.ServiceException;
 import pers.msidolphin.mblog.helper.*;
 import pers.msidolphin.mblog.model.mapper.UserMapper;
 import pers.msidolphin.mblog.model.repository.UserRepository;
+import pers.msidolphin.mblog.object.dto.AdminUserDto;
 import pers.msidolphin.mblog.object.dto.PortalUserDto;
 import pers.msidolphin.mblog.object.po.User;
 
@@ -44,12 +46,68 @@ public class UserService {
 	@Autowired
 	private RedisHelper redisHelper;
 
-	/*
-	 * portal start
-	 */
-	public void addUser() {
-
+	public ServerResponse<?> auth(AdminUserDto userDto, HttpServletResponse response) {
+		if(Util.isNotEmpty(userDto.getAccessToken()))
+			return checkAccessToken(userDto.getAccessToken());
+		return login(userDto.getUsername(), userDto.getPassword(), response);
 	}
+
+	/**
+	 * 用于后台用户登录
+	 * @param username		用户名
+	 * @param password		密码
+	 * @return
+	 */
+	public ServerResponse<?> login(String username, String password, HttpServletResponse response) {
+		//判断当前是否已经登录过了
+		if(RequestHolder.getCurrentAdmin() != null) return ServerResponse.success("登录成功");
+		if(Util.isEmpty(username) || Util.isEmpty(password))
+			throw new InvalidParameterException("用户名或密码不能为空");
+		User user = userRepository.findByUsername(username);
+		if(user == null)
+			return ServerResponse.response(ResponseCode.NOT_FOUND, "用户不存在");
+		if(user.getSalt() == null)
+			user.setSalt("");
+		String encry = MD5Helper.md5EncodeWithUtf8(password + user.getSalt());
+		System.out.println(encry);
+		user = userRepository.findByUsernameAndPassword(username, encry);
+		if(user == null)
+			return ServerResponse.badRequest("密码错误");
+
+		//用户登录成功，生成token存入到cookie
+		String token = UUID.randomUUID().toString();
+		//存入到缓存
+		redisHelper.setValue(token, JsonHelper.object2String(user), propertiesHelper.getLong("blog.admin.user.token.timeout"));
+		Cookie cookie = new Cookie(propertiesHelper.getValue("blog.admin.user.token.key"), token);
+		cookie.setMaxAge(propertiesHelper.getInt("blog.admin.user.token.timeout"));
+		cookie.setPath("/");
+		cookie.setDomain("localhost");
+		response.addCookie(cookie);
+		response.setHeader("Access-Control-Allow-Credentials", "true");
+		response.setHeader("Access-Control-Allow-Origin", RequestHolder.getCurrentRequest().getHeader("Origin"));
+
+		return ServerResponse.success("登录成功");
+	}
+
+	public ServerResponse<?> checkAccessToken(String token) {
+		if(token != null) {
+			String userString = redisHelper.getValue(token);
+			try {
+				if(userString != null) {
+					User user = JsonHelper.string2Object(userString, User.class);
+					AdminUserDto adminUserDto = new AdminUserDto();
+					adminUserDto.setId(user.getId().toString());
+					adminUserDto.setUsername(user.getId().toString());
+					return ServerResponse.success(adminUserDto);
+				}
+				return ServerResponse.unauthorized("令牌失效");
+			} catch (IOException e) {
+				throw new ServiceException(e);
+			}
+		}
+		return ServerResponse.unauthorized("未携带令牌");
+	}
+
 
 	public PortalUserDto getCurrentUser(HttpSession session) {
 		return (PortalUserDto) session.getAttribute("currentUser");

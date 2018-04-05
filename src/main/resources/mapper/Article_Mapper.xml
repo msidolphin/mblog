@@ -72,7 +72,8 @@
             <if test="type != null">
                 type = #{type},
             </if>
-              update_time = now()
+              update_time = now(),
+              updator = #{updator}
           </set>
             WHERE id = #{id}
     </update>

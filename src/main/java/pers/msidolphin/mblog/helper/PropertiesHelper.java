@@ -63,4 +63,12 @@ public class PropertiesHelper {
 		System.out.println("value:" + properties.getProperty("blog.article.ip.cache.prefix"));
 		return Long.parseLong(properties.getProperty(key));
 	}
+
+	public static Integer getInt(String key) {
+		if(StringHelper.isBlank(key)) {
+			return null;
+		}
+		System.out.println("value:" + properties.getProperty("blog.article.ip.cache.prefix"));
+		return Integer.parseInt(properties.getProperty(key));
+	}
 }

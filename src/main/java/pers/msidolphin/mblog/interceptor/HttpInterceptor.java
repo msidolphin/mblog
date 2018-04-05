@@ -28,19 +28,39 @@ public class HttpInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		//检查cookie中是否携带session key
-		Cookie[] cookies = request.getCookies();
-		String key = null;
-		if (cookies != null) {
-			for(Cookie cookie : cookies) {
-				if (propertiesHelper.getValue("blog.user.session.key").equals(cookie.getName()))
-					key = cookie.getValue();
+		String requestURI = request.getRequestURI();
+		//判断请求资源是属于前台还是后台
+		if(requestURI.startsWith("/api/admin") || requestURI.startsWith("/api/upload")) {
+			Cookie[] cookies = request.getCookies();
+			String key = null;
+			if(cookies != null) {
+				for(Cookie cookie : cookies) {
+					if(propertiesHelper.getValue("blog.admin.user.token.key").equals(cookie.getName()))
+						key = cookie.getValue();
+				}
 			}
-			if (key != null) {
+			if(key != null) {
 				//当cookie中携带了session key
 				String userJson = redisHelper.getValue(key);
-				RequestHolder.add(JsonHelper.string2Object(userJson, User.class));
+				RequestHolder.addAdminUser(JsonHelper.string2Object(userJson, User.class));
 			}
+		}else if(requestURI.startsWith("/api")) {
+			//检查cookie中是否携带session key
+			Cookie[] cookies = request.getCookies();
+			String key = null;
+			if (cookies != null) {
+				for(Cookie cookie : cookies) {
+					if (propertiesHelper.getValue("blog.user.session.key").equals(cookie.getName()))
+						key = cookie.getValue();
+				}
+				if (key != null) {
+					//当cookie中携带了session key
+					String userJson = redisHelper.getValue(key);
+					RequestHolder.add(JsonHelper.string2Object(userJson, User.class));
+				}
+			}
+		}else {
+			return false;
 		}
 		RequestHolder.add(request);
 		return true;

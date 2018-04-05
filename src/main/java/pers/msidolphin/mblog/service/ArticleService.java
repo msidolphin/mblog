@@ -11,7 +11,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ArticleType;
+import pers.msidolphin.mblog.exception.AuthorizedException;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.exception.ServiceException;
 import pers.msidolphin.mblog.helper.*;
@@ -20,6 +22,7 @@ import pers.msidolphin.mblog.model.repository.ArticleRepository;
 import pers.msidolphin.mblog.object.dto.ArticleDto;
 import pers.msidolphin.mblog.object.dto.CommentDto;
 import pers.msidolphin.mblog.object.po.Article;
+import pers.msidolphin.mblog.object.po.User;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -77,7 +80,9 @@ public class ArticleService {
 
     @Transactional
     public Article saveArticle(Article article, String originTagStr) {
-        //入参判断
+        //判断用户是否登录
+        User user = RequestHolder.getCurrentAdmin();
+        if(user == null) throw new AuthorizedException();
 
         //判断id是否为空，若id
         Long id = article.getId();
@@ -90,11 +95,10 @@ public class ArticleService {
             article.setId(AutoIdHelper.getId());
             //判断是否新增标签
             if(Util.isNotEmpty(article.getTags())) {
-                tagService.saveTags(article.getTags().split(","));
+                tagService.saveTags(article.getTags().split(","), user.getId());
             }
-            //TODO
-            article.setCreator(1L);
-            article.setUpdator(1L);
+            article.setCreator(user.getId());
+            article.setUpdator(user.getId());
             article.setUpdateTime(new Date());
             article.setCreateTime(new Date());
             article.setCid(null);
@@ -102,7 +106,6 @@ public class ArticleService {
             article.setViews(0);
             article.setVote(0);
             article.setSummary("");
-            System.out.println(article);
             //====
             //保存文章
             articleRepository.save(article);
@@ -117,12 +120,13 @@ public class ArticleService {
 
             if(dels.size() > 0) {
                 //删除标签
-                tagService.delTag(dels);
+                tagService.delTag(dels, user.getId());
             }
             if(adds.size() > 0) {
                 //新增的
-                tagService.saveTags(adds);
+                tagService.saveTags(adds, user.getId());
             }
+            article.setUpdator(user.getId());
             articleMapper.updateById(article);
         }
         return article;

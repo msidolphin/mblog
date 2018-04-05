@@ -1,9 +1,11 @@
 package pers.msidolphin.mblog.common;
 
+import com.mysql.fabric.Server;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
+import pers.msidolphin.mblog.exception.AuthorizedException;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
 
 /**
@@ -22,5 +24,10 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(value = InvalidParameterException.class)
 	public ServerResponse<?> invalidParameterExceptionHandler(InvalidParameterException exception) {
 		return ServerResponse.badRequest(ResponseCode.BAD_REQUEST.getDescription(), exception.getValidateResult());
+	}
+
+	@ExceptionHandler(AuthorizedException.class)
+	public ServerResponse<?> unauthorizedExceptionHandler(AuthorizedException e) {
+		return ServerResponse.unauthorized();
 	}
 }

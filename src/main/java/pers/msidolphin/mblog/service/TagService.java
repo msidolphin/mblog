@@ -2,9 +2,12 @@ package pers.msidolphin.mblog.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pers.msidolphin.mblog.exception.AuthorizedException;
 import pers.msidolphin.mblog.helper.AutoIdHelper;
+import pers.msidolphin.mblog.helper.RequestHolder;
 import pers.msidolphin.mblog.model.repository.TagRepository;
 import pers.msidolphin.mblog.object.po.Tag;
+import pers.msidolphin.mblog.object.po.User;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,8 +24,8 @@ public class TagService {
      * @param tag
      * @return 标签对象
      */
-    public Tag saveTag(Tag tag) {
-        return saveTag(tag.getName());
+    public Tag saveTag(Tag tag, Long uid) {
+        return saveTag(tag.getName(), uid);
     }
 
     /**
@@ -30,10 +33,10 @@ public class TagService {
      * @param tags
      * @return
      */
-    public List<Tag> saveTags(List<String> tags) {
+    public List<Tag> saveTags(List<String> tags, Long uid) {
         List<Tag> retTags = new ArrayList<>();
         for(String tag : tags) {
-            retTags.add(saveTag(tag));
+            retTags.add(saveTag(tag, uid));
         }
         return retTags;
     }
@@ -43,10 +46,10 @@ public class TagService {
      * @param tagString
      * @return 标签列表
      */
-    public List<Tag> saveTags(String[] tagString) {
+    public List<Tag> saveTags(String[] tagString, Long uid) {
         List<Tag> tags = new ArrayList<>();
         for(String tag : tagString) {
-            tags.add(saveTag(tag));
+            tags.add(saveTag(tag, uid));
         }
         return tags;
     }
@@ -58,7 +61,8 @@ public class TagService {
      * @param tagName
      * @return 标签对象
      */
-    public Tag saveTag(String tagName) {
+    public Tag saveTag(String tagName, Long currentUserId) {
+
         Tag tag = tagRepository.findByName(tagName);
         if(tag != null) {
             tag.setFrequency(tag.getFrequency() + 1);
@@ -69,19 +73,20 @@ public class TagService {
             tag.setName(tagName);
             tag.setCreateTime(new Date());
             tag.setId(AutoIdHelper.getId());
+            tag.setCreator(currentUserId);
         }
-        //更新时间
+        tag.setUpdator(currentUserId);
         tag.setUpdateTime(new Date());
         return tagRepository.save(tag);
     }
 
-    public void delTag(List<String> tags) {
+    public void delTag(List<String> tags, Long uid) {
         for(String tag : tags) {
-            delTag(tag);
+            delTag(tag, uid);
         }
     }
 
-    public void delTag(String tagName) {
+    public void delTag(String tagName, Long uid) {
         Tag tag = tagRepository.findByName(tagName);
         if(tag == null) {
             return;
@@ -94,6 +99,7 @@ public class TagService {
             }else {
                 //引用数量-1
                 tag.setFrequency(newCount);
+                tag.setUpdator(uid);
                 tagRepository.save(tag);
             }
         }

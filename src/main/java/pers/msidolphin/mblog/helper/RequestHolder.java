@@ -13,11 +13,15 @@ public class RequestHolder {
 	// ThreadLocal保证了各自进程数据的独立性
 	private static final ThreadLocal<User> userHolder = new ThreadLocal<>();
 
+	private static final ThreadLocal<User> adminHolder = new ThreadLocal<>();
+
 	private static final ThreadLocal<HttpServletRequest> requestHolder = new ThreadLocal<>();
 
 	public static void add(User user) {
 		userHolder.set(user);
 	}
+
+	public static void addAdminUser(User user) {adminHolder.set(user);}
 
 	public static void add(HttpServletRequest request) {
 		requestHolder.set(request);
@@ -26,6 +30,8 @@ public class RequestHolder {
 	public static User getCurrentUser() {
 		return userHolder.get();
 	}
+
+	public static User getCurrentAdmin() {return adminHolder.get();}
 
 	public static HttpServletRequest getCurrentRequest() {
 		return requestHolder.get();
@@ -39,8 +45,11 @@ public class RequestHolder {
 		userHolder.remove();
 	}
 
+	public static void removeCurrentAdmini() {adminHolder.remove();}
+
 	public static void removeAll() {
 		removeCurrentRequest();
 		removeCurrentUser();
+		removeCurrentAdmini();
 	}
 }
