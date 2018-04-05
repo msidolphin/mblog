@@ -5,12 +5,14 @@ import org.springframework.web.bind.annotation.*;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
 import pers.msidolphin.mblog.helper.JsonHelper;
+import pers.msidolphin.mblog.object.dto.AdminArticleDto;
 import pers.msidolphin.mblog.object.po.Article;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
 import pers.msidolphin.mblog.service.ArticleService;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Map;
 
 /**
  * Created by msidolphin on 2018/3/26.
@@ -29,11 +31,12 @@ public class ArticlesController {
 	}
 
 	@PostMapping("")
-	public ServerResponse<?> add(@RequestParam(value = "article") 	String article,
-									   @RequestParam(value = "originTags", required = false)  String originTags) {
+	public ServerResponse<?> save(@RequestParam(value = "article") 	String article,
+									   @RequestParam(value = "originTags", required = false)  String originTags,
+								       @RequestParam(value = "originTagsId", required = false)  String originTagsId) {
 		try {
-			Article articleObj = JsonHelper.string2Object(article, Article.class);
-			articleService.saveArticle(articleObj, originTags);
+			AdminArticleDto articleObj = JsonHelper.string2Object(article, AdminArticleDto.class);
+			articleService.saveArticle(articleObj, originTags, originTagsId);
 			return ServerResponse.success(articleObj);
 		} catch (IOException e) {
 			return ServerResponse.internalError(e.getMessage());
@@ -42,7 +45,7 @@ public class ArticlesController {
 
 	@GetMapping("/{id}")
 	public ServerResponse<?> get(@PathVariable  Long id) {
-		Article article = articleService.getArticle(id);
+		AdminArticleDto article = articleService.getArticle(id);
 		if(article != null) {
 			return ServerResponse.success(article);
 		}
@@ -55,8 +58,8 @@ public class ArticlesController {
 	 * @return
 	 */
 	@PutMapping("")
-	public ServerResponse<?> logicDelete(String id) {
-		articleService.logicDelete(id);
+	public ServerResponse<?> logicDelete(@RequestBody Map<String, String> params) {
+		articleService.logicDelete(params.get("id"));
 		return ServerResponse.response(ResponseCode.NO_CONTENT);
 	}
 
@@ -66,8 +69,8 @@ public class ArticlesController {
 	 * @return
 	 */
 	@DeleteMapping("")
-	public ServerResponse<?> delete(String id) {
-		articleService.delete(id);
+	public ServerResponse<?> delete(@RequestBody Map<String, String> params) {
+		articleService.delete(params.get("id"));
 		return ServerResponse.response(ResponseCode.NO_CONTENT);
 	}
 

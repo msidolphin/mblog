@@ -5,13 +5,12 @@
     <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.ArticleDto" >
         <id     property="id"           column="id"            jdbcType="INTEGER" javaType="java.lang.String" />
         <result property="title"        column="title"         jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="content"      column="content"         jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="content"      column="content"       jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="typeCode"     column="type"          jdbcType="INTEGER" javaType="java.lang.Integer"/>
         <result property="summary"      column="summary"       jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="thumbnail"    column="thumbnail"     jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="author"       column="user_name"     jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="views"        column="views"         jdbcType="INTEGER" javaType="java.lang.Integer" />
-        <result property="tags"         column="tags"          jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="commentCount" column="comment_count" jdbcType="INTEGER" javaType="java.lang.Integer" />
         <result property="createTime"   column="create_time"   jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="updateTime"   column="update_time"   jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -28,11 +27,10 @@
         a.summary,
         (select u.nickname from user u where u.id = a.creator) user_name,
         (SELECT count(0) cnum FROM comment c WHERE c.article_id = a.id) comment_count,
-        a.tags,
         DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,
         DATE_FORMAT(a.update_time,'%Y-%m-%d %H:%i:%s') update_time
         FROM article a WHERE 1 = 1 AND a.is_delete = 0
-        <if test="title != null">
+            <if test="title != null">
                 AND a.title LIKE #{title}
             </if>
             <if test="startTime != null">
@@ -42,8 +40,12 @@
                 AND a.create_time <![CDATA[ <= ]]> #{endTime}
             </if>
             <if test="tags != null">
-                <foreach collection="tagList" item="tag" >
-                    AND find_in_set(#{tag}, a.tags)
+                <!--<foreach collection="tagList" item="tag" >-->
+                    <!--AND find_in_set(#{tag}, a.tags)-->
+                <!--</foreach>-->
+                <!-- 表结构改变了，那么标签查询条件t也应有所不同 -->
+                <foreach collection="tagIdList" item="id">
+                    AND EXISTS(SELECT t.id FROM tags t INNER JOIN article_tag at on t.id = at.tid WHERE t.id = #{id})
                 </foreach>
             </if>
             <if test="id != null">
@@ -51,12 +53,9 @@
             </if>
     </select>
     
-    <update id="updateById" parameterType="pers.msidolphin.mblog.object.po.Article">
+    <update id="updateById" parameterType="pers.msidolphin.mblog.object.dto.AdminArticleDto">
         UPDATE article
           <set>
-            <if test="tags != null">
-                tags = #{tags},
-            </if>
             <if test="content != null">
                 content = #{content},
             </if>

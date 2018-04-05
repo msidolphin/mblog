@@ -8,7 +8,7 @@ public class AutoIdHelper {
         this.idWorker = new SnowflakeIdWorker(0L, 0L);
     }
 
-    public static long getId() {
+    public static Long getId() {
         if (autoIdHelper == null) {
             synchronized (AutoIdHelper.class) {
                 if (autoIdHelper == null) {

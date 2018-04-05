@@ -19,6 +19,8 @@ public class ArticleQuery extends BaseQuery {
 
 	private List<String> tagList;
 
+	private List<String> tagIdList;
+
 	private String startTime;
 
 	private String endTime;
@@ -76,6 +78,15 @@ public class ArticleQuery extends BaseQuery {
 
 	public ArticleQuery setTagList(List<String> tagList) {
 		this.tagList = tagList;
+		return this;
+	}
+
+	public List<String> getTagIdList() {
+		return tagIdList;
+	}
+
+	public ArticleQuery setTagIdList(List<String> tagIdList) {
+		this.tagIdList = tagIdList;
 		return this;
 	}
 

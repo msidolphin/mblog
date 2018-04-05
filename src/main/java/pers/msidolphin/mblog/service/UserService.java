@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
+import pers.msidolphin.mblog.exception.AuthorizedException;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.exception.ServiceException;
 import pers.msidolphin.mblog.helper.*;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -97,7 +99,7 @@ public class UserService {
 					User user = JsonHelper.string2Object(userString, User.class);
 					AdminUserDto adminUserDto = new AdminUserDto();
 					adminUserDto.setId(user.getId().toString());
-					adminUserDto.setUsername(user.getId().toString());
+					adminUserDto.setUsername(user.getUsername().toString());
 					return ServerResponse.success(adminUserDto);
 				}
 				return ServerResponse.unauthorized("令牌失效");
@@ -107,6 +109,35 @@ public class UserService {
 		}
 		return ServerResponse.unauthorized("未携带令牌");
 	}
+
+	public AdminUserDto getCurrentUser() {
+		User user = RequestHolder.getCurrentAdmin();
+		if(user == null) throw new AuthorizedException();
+		return copy2AdminDto(user);
+	}
+
+	public ServerResponse<?> getAdminUser(String id) {
+		AdminUserDto userDto = getCurrentUser();
+		if(userDto != null) return ServerResponse.success(userDto);
+		if(id == null) throw new InvalidParameterException("用户id不能为空");
+		Optional<User> userOptional = userRepository.findById(Long.parseLong(id));
+		User user = null;
+		if(userOptional.isPresent()) user = userOptional.get();
+		if(user == null) return ServerResponse.response(ResponseCode.NOT_FOUND);
+		return ServerResponse.success(copy2AdminDto(user));
+	}
+
+	private AdminUserDto copy2AdminDto(User user) {
+		AdminUserDto adminUserDto = new AdminUserDto();
+		adminUserDto.setId(user.getId().toString());
+		adminUserDto.setUsername(user.getUsername());
+		adminUserDto.setNickname(user.getNickname());
+		adminUserDto.setEmail(user.getEmail());
+		adminUserDto.setAvatar(user.getAvatar());
+		adminUserDto.setPhone(user.getPhone());
+		return adminUserDto;
+	}
+
 
 
 	public PortalUserDto getCurrentUser(HttpSession session) {

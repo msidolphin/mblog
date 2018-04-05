@@ -2,10 +2,12 @@ package pers.msidolphin.mblog.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
@@ -19,6 +21,7 @@ import pers.msidolphin.mblog.exception.ServiceException;
 import pers.msidolphin.mblog.helper.*;
 import pers.msidolphin.mblog.model.mapper.ArticleMapper;
 import pers.msidolphin.mblog.model.repository.ArticleRepository;
+import pers.msidolphin.mblog.object.dto.AdminArticleDto;
 import pers.msidolphin.mblog.object.dto.ArticleDto;
 import pers.msidolphin.mblog.object.dto.CommentDto;
 import pers.msidolphin.mblog.object.po.Article;
@@ -68,34 +71,64 @@ public class ArticleService {
         }
         if(Util.isNotEmpty(query.getTags())) {
             //将标签字符串转换为List
-            query.setTagList(Util.asList(query.getTags().split(",")));
+//            query.setTagList(Util.asList(query.getTags().split(",")));
+            String[] tags = query.getTags().split(",");
+
+            //获取效应标签的id
+            List<String> ids = Lists.newArrayList();
+            for(String tag : tags) {
+                String id = tagService.getTagIdByName(tag);
+                //该标签不存在，已经不需要继续查询了
+                if (id == null) return new PageInfo<>(Lists.newArrayList());
+                ids.add(id);
+            }
+            query.setTagIdList(ids);
         }else {
             query.setTags(null);
         }
         //设置分页参数
         PageHelper.startPage(query.getPageNum(), query.getPageSize(), "a.create_time desc");
         List<ArticleDto> lists = articleMapper.findArticles(query);
+        //获取标签
+        for(ArticleDto articleDto : lists) {
+            List<Map<String, Object>> tags = tagService.getTags(articleDto.getId());
+            StringBuffer tagsName = new StringBuffer();
+            for(Map<String, Object> tag : tags) {
+                tagsName.append(tag.get("name").toString()).append(",");
+            }
+            articleDto.setTags(tagsName.substring(0, tagsName.lastIndexOf(",")));
+        }
         return new PageInfo<>(lists);
     }
 
     @Transactional
-    public Article saveArticle(Article article, String originTagStr) {
+    public Article saveArticle(AdminArticleDto articleDto, String originTagStr, String originTagId) {
         //判断用户是否登录
         User user = RequestHolder.getCurrentAdmin();
         if(user == null) throw new AuthorizedException();
-
+        Article article = new Article();
+        BeanUtils.copyProperties(articleDto,article);
         //判断id是否为空，若id
-        Long id = article.getId();
+        String id = article.getId();
 
         List<String> dels;
         List<String> adds;
 
+        //维护文章表与标签表的关系
+        List<String> delIds;
+        List<String> addIds;
+
         if(Util.isEmpty(id)) {
             //新增操作
-            article.setId(AutoIdHelper.getId());
+            article.setId(AutoIdHelper.getId().toString());
             //判断是否新增标签
-            if(Util.isNotEmpty(article.getTags())) {
-                tagService.saveTags(article.getTags().split(","), user.getId());
+            if(Util.isNotEmpty(articleDto.getTags())) {
+                //tags字段现在不存入数据库
+                List<String> ids = tagService.saveTags4newArticle(Util.asList(articleDto.getTags().split(",")), user.getId());
+                for(String nid : ids) {
+                    //建立关联
+                    tagService.createRelationship(article.getId().toString(), nid);
+                }
             }
             article.setCreator(user.getId());
             article.setUpdator(user.getId());
@@ -109,22 +142,45 @@ public class ArticleService {
             //====
             //保存文章
             articleRepository.save(article);
+
         }else {
             //判断当前标签和原标签的差异
             List<String> originTags = Util.asList(originTagStr.split(","));
-            List<String> currentTags = Util.asList(article.getTags().split(","));
+            List<String> currentTags = Util.asList(articleDto.getTags().split(","));
             //删除的
             dels = Util.diff(originTags, currentTags);
             //新增的
             adds = Util.diff(currentTags, originTags);
 
+            //add
+            if(originTagId == null) originTagId = "";
+            if(articleDto.getTagsId() == null) articleDto.setTags("");
+            List<String> originTagIds = Util.asList(originTagId.split(","));
+            List<String> currentTagIds = Util.asList(articleDto.getTagsId().split(","));
+            //===========
+
+            delIds = Util.diff(originTagIds, currentTagIds);
+            addIds = Util.diff(currentTagIds, originTagIds);
+
             if(dels.size() > 0) {
                 //删除标签
                 tagService.delTag(dels, user.getId());
+
+                //打破文章与标签的原有关系
+                for(int i = 0 ; i < delIds.size() ; ++i)
+                    tagService.brokenRelationship(article.getId().toString(), delIds.get(i));
+
             }
             if(adds.size() > 0) {
                 //新增的
-                tagService.saveTags(adds, user.getId());
+                List<String> newIds = tagService.saveTags(adds, user.getId());
+                for(String newId : newIds) {
+                    addIds.add(newId);
+                }
+                //建立关联
+                for(int i = 0 ; i < addIds.size() ; ++i)
+                    tagService.createRelationship(article.getId().toString(), addIds.get(i));
+
             }
             article.setUpdator(user.getId());
             articleMapper.updateById(article);
@@ -137,15 +193,27 @@ public class ArticleService {
      * @param id
      * @return
      */
-    public Article getArticle(Long id) {
+    public AdminArticleDto getArticle(Long id) {
         if(Util.isEmpty(id)) {
             throw new InvalidParameterException("文章id不能为为空");
         }
-        Optional<Article> optionalArticle = articleRepository.findById(id);
-        if(optionalArticle.isPresent()) {
-            return optionalArticle.get();
+        Optional<Article> optionalArticle = articleRepository.findById(id.toString());
+        Article article = optionalArticle.get();
+        //获取文章标签
+        AdminArticleDto adminArticleDto = new AdminArticleDto();
+        BeanUtils.copyProperties(article, adminArticleDto);
+        //查询文章标签
+        List<Map<String, Object>> tags = tagService.getTags(article.getId());
+        System.out.println("tags:"+ tags);
+        StringBuffer tagsName = new StringBuffer();
+        StringBuffer tagsId = new StringBuffer();
+        for(Map<String, Object> tag : tags) {
+            tagsName.append(tag.get("name").toString()).append(",");
+            tagsId.append(tag.get("id").toString()).append(",");
         }
-        return null;
+        adminArticleDto.setTagsId(tagsId.substring(0, tagsId.lastIndexOf(",")));
+        adminArticleDto.setTags(tagsName.substring(0, tagsName.lastIndexOf(",")));
+        return adminArticleDto;
     }
 
     /**
@@ -164,7 +232,7 @@ public class ArticleService {
      */
     public void delete(String id) {
         if(Util.isEmpty(id)) throw new InvalidParameterException("文章id不能为空");
-        articleRepository.deleteById(Long.parseLong(id));
+        articleRepository.deleteById(id);
     }
 
 

@@ -5,9 +5,11 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pers.msidolphin.mblog.common.ServerResponse;
+import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.helper.AutoIdHelper;
 import pers.msidolphin.mblog.helper.PropertiesHelper;
 import pers.msidolphin.mblog.helper.RequestHolder;
+import pers.msidolphin.mblog.helper.Util;
 import pers.msidolphin.mblog.model.mapper.RepliesMapper;
 import pers.msidolphin.mblog.model.repository.RepliesRepository;
 import pers.msidolphin.mblog.object.dto.ReplyDto;
@@ -62,6 +64,13 @@ public class RepliesService {
 		reply.setVote(0);
 		repliesRepository.save(reply);
 		return ServerResponse.success(reply);
+	}
+
+	public String changeStatus(String id, String status) {
+		if(Util.isEmpty(id) || Util.isEmpty(status))
+			throw new InvalidParameterException("评论id或状态不能为空");
+		repliesMapper.updateStatusById(status, id);
+		return status;
 	}
 
 }

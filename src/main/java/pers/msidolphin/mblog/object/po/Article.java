@@ -19,7 +19,7 @@ public class Article {
 
 	@Id
 	@Column(name = "id")
-	private Long id;			 //主键
+	private String id;			 //主键
 
 	@Column(name = "title")
 	@NotEmpty(message = "文章标题不能为空")
@@ -37,10 +37,6 @@ public class Article {
 	@Column(name = "content")
 	@NotEmpty(message = "文章内容不能为空")
 	private String content;      //文章内容
-
-	@Column(name = "tags")
-	@NotEmpty(message = "文章标签不能为空")
-	private String tags;		 //标签字符串
 
 	@Column(name = "is_delete")
 	private Integer isDelete;	 //是否删除 0-否 1-是
@@ -78,7 +74,6 @@ public class Article {
 				", summary='" + summary + '\'' +
 				", type=" + type +
 				", content='" + content + '\'' +
-				", tags='" + tags + '\'' +
 				", isDelete=" + isDelete +
 				", views=" + views +
 				", editor=" + editor +

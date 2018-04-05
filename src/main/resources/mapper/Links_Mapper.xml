@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.msidolphin.mblog.model.mapper.LinkMapper">
+
+    <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.AdminLinkDto" >
+        <id     property="id"           column="id"           jdbcType="INTEGER" javaType="java.lang.String" />
+        <result property="name"         column="name"         jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="frequency"    column="frequency"    jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="createTime"   column="create_time"  jdbcType="VARCHAR" javaType="java.lang.String"/>
+    </resultMap>
+
+    <select id="findTags" parameterType="pers.msidolphin.mblog.object.query.TagQuery" resultMap="BaseResultMap">
+       SELECT
+           t.id,
+           t.name,
+           t.frequency,
+           DATE_FORMAT(t.create_time, '%Y-%m-%d %H:%i%s') create_time
+       FROM tags t
+       <where>
+          <if test="name">
+              AND t.name like #{name}
+          </if>
+       </where>
+    </select>
+    
+    <update id="updateTagById" parameterType="list">
+        UPDATE tags t SET t.name = #{name}, updator = #{updator}, update_time = now()  WHERE t.id = #{id}
+    </update>
+</mapper>

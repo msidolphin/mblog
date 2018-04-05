@@ -9,6 +9,7 @@ import pers.msidolphin.mblog.object.dto.AdminUserDto;
 import pers.msidolphin.mblog.service.UserService;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * Created by msidolphin on 2018/3/26.
@@ -21,7 +22,12 @@ public class UsersController {
 	private UserService userService;
 
 	@PostMapping(value = "")
-	public ServerResponse<?> get (@RequestBody AdminUserDto userDto, HttpServletResponse response) {
+	public ServerResponse<?> auth (@RequestBody AdminUserDto userDto, HttpServletResponse response) {
 		return userService.auth(userDto, response);
+	}
+
+	@GetMapping("/{id}")
+	public ServerResponse<?> get(@PathVariable String id) {
+		return null;
 	}
 }

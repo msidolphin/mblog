@@ -28,4 +28,12 @@ public abstract class BaseQuery {
 		this.pageSize = pageSize;
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "BaseQuery{" +
+				"pageNum=" + pageNum +
+				", pageSize=" + pageSize +
+				'}';
+	}
 }

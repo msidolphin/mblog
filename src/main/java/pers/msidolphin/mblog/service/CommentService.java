@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
+import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.helper.*;
 import pers.msidolphin.mblog.model.mapper.CommentMapper;
 import pers.msidolphin.mblog.model.mapper.RepliesMapper;
@@ -69,6 +70,12 @@ public class CommentService extends BaseService{
 		PageHelper.startPage(query.getPageNum(), query.getPageSize());
 		PageInfo<AdminCommentDto> pageInfo = new PageInfo<>(commentMapper.findComments(query));
 		return pageInfo;
+	}
+
+	public String changeStatus(String id, String status) {
+		if(Util.isEmpty(id)) throw new InvalidParameterException("评论id不能为空");
+		commentMapper.updateStatusById(status, id);
+		return status;
 	}
 
 	/**

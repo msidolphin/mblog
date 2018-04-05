@@ -1,5 +1,6 @@
 package pers.msidolphin.mblog.object.dto;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ public class AdminCommentDto {
 	private String username;
 	private String email;
 	private String website;
+	private String content;
 	private String create_time;
-	private String status;
+	private Boolean status;
 }

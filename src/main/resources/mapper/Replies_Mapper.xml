@@ -38,8 +38,12 @@
             u.id user_id,
             u2.id user_id2,
             r.content content,
-            DATE_FORMAT(r.create_time,'%Y-%m-%d %h:%i:%s') create_time
+            DATE_FORMAT(r.create_time,'%Y-%m-%d %H:%i:%s') create_time
         FROM replies r LEFT JOIN user u ON r.user_id = u.id LEFT JOIN user u2 ON r.to_user_id = u2.id
         WHERE r.comment_id = #{id}
     </select>
+
+    <update id="updateStatusById" parameterType="list">
+        UPDATE replies r SET r.status = #{status} WHERE r.id = #{id}
+    </update>
 </mapper>

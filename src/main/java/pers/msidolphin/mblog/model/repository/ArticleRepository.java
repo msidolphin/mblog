@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pers.msidolphin.mblog.object.po.Article;
 
 @Repository
-public interface ArticleRepository extends CrudRepository<Article, Long> {
+public interface ArticleRepository extends CrudRepository<Article, String> {
 
 	@Transactional
 	@Modifying(clearAutomatically = true)

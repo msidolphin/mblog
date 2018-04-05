@@ -2,9 +2,6 @@ package pers.msidolphin.mblog.object.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import pers.msidolphin.mblog.common.annotation.Validation;
-
-import javax.validation.constraints.NotEmpty;
 
 /**
  * Created by msidolphin on 2018/4/4.
@@ -13,8 +10,12 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 public class AdminUserDto {
 	private String id;
+	private String avatar;
 	private String username;
+	private String nickname;
 	private String password;
+	private String email;
+	private String phone;
 	private String accessToken;
 
 	@Override
