@@ -1,6 +1,8 @@
 package pers.msidolphin.mblog.service;
 
+import com.google.common.collect.Maps;
 import com.sun.org.apache.regexp.internal.RE;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,23 @@ public class UserService {
 	@Autowired
 	private RedisHelper redisHelper;
 
+	@Transactional
+	public ServerResponse<?> save(AdminUserDto adminUserDto) {
+		//更新到数据库
+		Map<String, String> params = Maps.newHashMap();
+		params.put("id", adminUserDto.getId());
+		if(Util.isNotEmpty(adminUserDto.getNickname())) params.put("nickname",adminUserDto.getNickname());
+		if(Util.isNotEmpty(adminUserDto.getAvatar())) 	params.put("avatar", adminUserDto.getAvatar());
+		if(Util.isNotEmpty(adminUserDto.getEmail())) 	params.put("email", adminUserDto.getEmail());
+		if(Util.isNotEmpty(adminUserDto.getPhone())) 	params.put("phone", adminUserDto.getPhone());
+		if(Util.isNotEmpty(adminUserDto.getSummary())) 	params.put("summary", adminUserDto.getSummary());
+		userMapper.updateUserById(params);
+		User user = userRepository.findByUsername(adminUserDto.getUsername());
+		//更新缓存
+		redisHelper.setValue(RequestHolder.getRequestToken(), JsonHelper.object2String(user));
+		return ServerResponse.success(adminUserDto);
+	}
+
 	public ServerResponse<?> auth(AdminUserDto userDto, HttpServletResponse response) {
 		if(Util.isNotEmpty(userDto.getAccessToken()))
 			return checkAccessToken(userDto.getAccessToken());
@@ -71,7 +90,6 @@ public class UserService {
 		if(user.getSalt() == null)
 			user.setSalt("");
 		String encry = MD5Helper.md5EncodeWithUtf8(password + user.getSalt());
-		System.out.println(encry);
 		user = userRepository.findByUsernameAndPassword(username, encry);
 		if(user == null)
 			return ServerResponse.badRequest("密码错误");
@@ -96,11 +114,10 @@ public class UserService {
 			String userString = redisHelper.getValue(token);
 			try {
 				if(userString != null) {
-					User user = JsonHelper.string2Object(userString, User.class);
-					AdminUserDto adminUserDto = new AdminUserDto();
-					adminUserDto.setId(user.getId().toString());
-					adminUserDto.setUsername(user.getUsername().toString());
-					return ServerResponse.success(adminUserDto);
+					AdminUserDto user = JsonHelper.string2Object(userString, AdminUserDto.class);
+					if(Util.isNotEmpty(user.getAvatar()))
+						user.setAvatar(propertiesHelper.getValue("blog.image.server") + user.getAvatar());
+					return ServerResponse.success(user);
 				}
 				return ServerResponse.unauthorized("令牌失效");
 			} catch (IOException e) {
@@ -161,6 +178,12 @@ public class UserService {
 		return null;
 	}
 
+	/**
+	 * 新增用户 前台
+	 * @param user
+	 * @param response
+	 * @return
+	 */
 	@Transactional
 	public ServerResponse<?> addUser(User user, HttpServletResponse response) {
 		Map<String, String> validateRes = BeanValidatorHelper.validate(user);
@@ -218,6 +241,10 @@ public class UserService {
 				propertiesHelper.getLong("blog.user.session,timeout"));
 		//将session id写回到cookie
 		Cookie cookie = new Cookie(propertiesHelper.getValue("blog.user.session.key"), session.getId());
+		cookie.setPath("/");
+		cookie.setDomain("localhost");
+		response.setHeader("Access-Control-Allow-Credentials", "true");
+		response.setHeader("Access-Control-Allow-Origin", RequestHolder.getCurrentRequest().getHeader("Origin"));
 		//更新当前用户
 		RequestHolder.removeCurrentUser();
 		RequestHolder.add(user);

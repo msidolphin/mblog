@@ -43,9 +43,12 @@ public class HttpInterceptor implements HandlerInterceptor {
 			if(key != null) {
 				//当cookie中携带了session key
 				String userJson = redisHelper.getValue(key);
+				System.out.println("request cookie : " + key);
 				if (userJson == null && !requestURI.equals("/api/admin/users"))
 					throw new AuthorizedException();	//未认证，不拦截登录接口
+				//缓存用户和Token信息
 				RequestHolder.addAdminUser(JsonHelper.string2Object(userJson, User.class));
+				RequestHolder.add(key);
 			}
 		}else if(requestURI.startsWith("/api")) {
 			//检查cookie中是否携带session key

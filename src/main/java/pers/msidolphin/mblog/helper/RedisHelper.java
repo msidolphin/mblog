@@ -41,4 +41,8 @@ public class RedisHelper {
 		return redisTemplate.opsForValue().get(key);
 	}
 
+	public Boolean remove(String key) {
+		return redisTemplate.delete(key);
+	}
+
 }

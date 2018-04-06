@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import pers.msidolphin.mblog.common.annotation.Validation;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.helper.BeanValidatorHelper;
+import pers.msidolphin.mblog.helper.RequestHolder;
 
 import javax.xml.validation.Validator;
 import java.util.Map;

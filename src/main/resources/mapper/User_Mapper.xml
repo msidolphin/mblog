@@ -20,4 +20,27 @@
        FROM user u
        WHERE u.id = #{id}
     </select>
+    
+    <update id="updateUserById" parameterType="map">
+        UPDATE user
+        <set>
+            <if test='nickname != null and nickname != ""'>
+                nickname = #{nickname},
+            </if>
+            <if test='email != null and email != ""'>
+                email = #{email},
+            </if>
+            <if test='phone != null and phone != ""'>
+                phone = #{phone},
+            </if>
+            <if test='summary != null and summary != ""'>
+                summary = #{summary},
+            </if>
+            <if test='avatar != null and avatar != ""'>
+                avatar = #{avatar},
+            </if>
+            update_time = now()
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper>

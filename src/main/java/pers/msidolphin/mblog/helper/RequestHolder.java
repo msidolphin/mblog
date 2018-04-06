@@ -10,11 +10,18 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RequestHolder {
 
-	// ThreadLocal保证了各自进程数据的独立性
+	/* ThreadLocal保证了各自进程数据的独立性*/
+
+	//保存前台用户信息
 	private static final ThreadLocal<User> userHolder = new ThreadLocal<>();
 
+	//保存后台用户信息
 	private static final ThreadLocal<User> adminHolder = new ThreadLocal<>();
 
+	//保存后台请求token信息 即cookie
+	private static final ThreadLocal<String> adminRequestToken = new ThreadLocal<>();
+
+	//本次请求
 	private static final ThreadLocal<HttpServletRequest> requestHolder = new ThreadLocal<>();
 
 	public static void add(User user) {
@@ -27,6 +34,8 @@ public class RequestHolder {
 		requestHolder.set(request);
 	}
 
+	public static void add(String token) {adminRequestToken.set(token);}
+
 	public static User getCurrentUser() {
 		return userHolder.get();
 	}
@@ -36,6 +45,8 @@ public class RequestHolder {
 	public static HttpServletRequest getCurrentRequest() {
 		return requestHolder.get();
 	}
+
+	public static String getRequestToken() {return adminRequestToken.get();}
 
 	public static void removeCurrentRequest() {
 		requestHolder.remove();
@@ -47,9 +58,12 @@ public class RequestHolder {
 
 	public static void removeCurrentAdmini() {adminHolder.remove();}
 
+	public static void removeAdminRequestToken() {adminRequestToken.remove();}
+
 	public static void removeAll() {
 		removeCurrentRequest();
 		removeCurrentUser();
 		removeCurrentAdmini();
+		removeAdminRequestToken();
 	}
 }
