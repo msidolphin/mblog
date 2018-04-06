@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
@@ -72,6 +73,7 @@ public class CommentService extends BaseService{
 		return pageInfo;
 	}
 
+	@Transactional
 	public String changeStatus(String id, String status) {
 		if(Util.isEmpty(id)) throw new InvalidParameterException("评论id不能为空");
 		commentMapper.updateStatusById(status, id);
@@ -83,6 +85,7 @@ public class CommentService extends BaseService{
 	 * @param comment
 	 * @return
 	 */
+	@Transactional
 	public ServerResponse<?> addComment(Comment comment) {
 		//评论人
 		User user = RequestHolder.getCurrentUser();

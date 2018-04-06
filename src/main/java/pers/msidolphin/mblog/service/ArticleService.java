@@ -221,6 +221,7 @@ public class ArticleService {
      * @param id 文章id
      * @return {int} 影响行数
      */
+    @Transactional
     public int logicDelete(String id) {
         return articleRepository.updateStatusById(1, id);
     }
@@ -230,6 +231,7 @@ public class ArticleService {
      * 物理删除文章
      * @param id 文章id
      */
+    @Transactional
     public void delete(String id) {
         if(Util.isEmpty(id)) throw new InvalidParameterException("文章id不能为空");
         articleRepository.deleteById(id);

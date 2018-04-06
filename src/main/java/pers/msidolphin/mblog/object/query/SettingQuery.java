@@ -10,6 +10,7 @@ public class SettingQuery extends BaseQuery {
 
 	private String name;
 	private String key;
+	private String type;
 
 	public String getName() {
 		if(name == null) return null;
@@ -21,5 +22,9 @@ public class SettingQuery extends BaseQuery {
 		if(key == null) return null;
 		if("".equals(key.trim())) return null;
 		return key + "%";
+	}
+
+	public String getType() {
+		return type;
 	}
 }

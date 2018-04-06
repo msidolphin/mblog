@@ -11,7 +11,8 @@ public class Util {
             return true;
         }
         if ((o instanceof String)) {
-            return ((String) o).trim().length() == 0;
+            String s = (String) o;
+            return "".equals(s.trim());
         }
         if ((o instanceof List)) {
             return ((List) o).size() == 0;

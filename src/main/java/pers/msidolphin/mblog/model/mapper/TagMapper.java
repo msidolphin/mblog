@@ -14,7 +14,7 @@ public interface TagMapper {
 
 	List<AdminTagDto> findTags(TagQuery query);
 
-	int updateTagByName(@Param("id") String id,@Param("name") String name,@Param("updator") String updator);
+	int updateTagById(@Param("id") String id,@Param("name") String name,@Param("updator") String updator);
 
 	List<Map<String, Object>> findTagByArticleId(String id);
 

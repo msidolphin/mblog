@@ -7,6 +7,7 @@
         <result property="key"          column="key"          jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="value"        column="value"        jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="name"         column="name"         jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="isImage"      column="is_image"     jdbcType="INTEGER" javaType="java.lang.Boolean"/>
         <result property="createTime"   column="create_time"  jdbcType="VARCHAR" javaType="java.lang.String"/>
     </resultMap>
 
@@ -14,8 +15,9 @@
        SELECT
            s.id,
            s.name,
-           s.key_vlaue `key`,
+           s.key_value `key`,
            s.value,
+           s.is_image,
            s.type
        FROM setting s
        <where>
@@ -25,7 +27,11 @@
           <if test="key != null">
               AND s.key_value like #{key}
           </if>
+           <if test='type != null and type != ""'>
+               AND s.type = #{type}
+           </if>
        </where>
+        ORDER BY s.id ASC
     </select>
     
     <update id="updateSettingById" parameterType="map">
@@ -37,9 +43,15 @@
                 <if test='value != null and name != ""'>
                     s.value = #{value},
                 </if>
-                updator = #{updator},
-                update_time = now()
+                <if test='type != null and type != ""'>
+                    s.type = #{type},
+                </if>
+                <if test='isImage != null and isImage != ""'>
+                    s.is_image = #{isImage},
+                </if>
+                s.updator = #{updator},
+                s.update_time = now()
             </set>
-        WHERE t.id = #{id}
+        WHERE s.id = #{id}
     </update>
 </mapper>

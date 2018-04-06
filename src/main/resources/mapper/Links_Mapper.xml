@@ -5,25 +5,43 @@
     <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.AdminLinkDto" >
         <id     property="id"           column="id"           jdbcType="INTEGER" javaType="java.lang.String" />
         <result property="name"         column="name"         jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result property="frequency"    column="frequency"    jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="url"          column="url"          jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="sort"         column="sort"         jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="createTime"   column="create_time"  jdbcType="VARCHAR" javaType="java.lang.String"/>
     </resultMap>
 
-    <select id="findTags" parameterType="pers.msidolphin.mblog.object.query.TagQuery" resultMap="BaseResultMap">
+    <select id="findLinks" parameterType="pers.msidolphin.mblog.object.query.LinkQuery" resultMap="BaseResultMap">
        SELECT
-           t.id,
-           t.name,
-           t.frequency,
-           DATE_FORMAT(t.create_time, '%Y-%m-%d %H:%i%s') create_time
-       FROM tags t
-       <where>
-          <if test="name">
-              AND t.name like #{name}
-          </if>
-       </where>
+           l.id,
+           l.name,
+           l.url,
+           l.sort,
+           DATE_FORMAT(l.create_time, '%Y-%m-%d %H:%i:%s') create_time
+       FROM links l
+       WHERE l.is_delete = 0
+      <if test="name">
+          AND l.name like #{name}
+      </if>
+      ORDER BY l.create_time DESC
     </select>
     
-    <update id="updateTagById" parameterType="list">
-        UPDATE tags t SET t.name = #{name}, updator = #{updator}, update_time = now()  WHERE t.id = #{id}
+    <update id="updateLinkById" parameterType="map">
+        UPDATE links l
+            SET
+            <if test='name != null and name !=""'>
+                l.name = #{name},
+            </if>
+            <if test='url != null and url != ""'>
+                l.url = #{url},
+            </if>
+            <if test='sort != null and sort != ""'>
+                l.sort = #{sort},
+            </if>
+            <if test='is_delete != null and is_delete != ""'>
+                l.is_delete = #{is_delete},
+            </if>
+            l.update_time = now(),
+            l.updator = #{updator}
+        WHERE l.id = #{id}
     </update>
 </mapper>

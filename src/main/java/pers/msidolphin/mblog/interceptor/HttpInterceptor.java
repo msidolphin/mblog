@@ -5,6 +5,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import pers.msidolphin.mblog.exception.AuthorizedException;
 import pers.msidolphin.mblog.helper.JsonHelper;
 import pers.msidolphin.mblog.helper.PropertiesHelper;
 import pers.msidolphin.mblog.helper.RedisHelper;
@@ -42,6 +43,8 @@ public class HttpInterceptor implements HandlerInterceptor {
 			if(key != null) {
 				//当cookie中携带了session key
 				String userJson = redisHelper.getValue(key);
+				if (userJson == null && !requestURI.equals("/api/admin/users"))
+					throw new AuthorizedException();	//未认证，不拦截登录接口
 				RequestHolder.addAdminUser(JsonHelper.string2Object(userJson, User.class));
 			}
 		}else if(requestURI.startsWith("/api")) {

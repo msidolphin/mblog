@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.helper.AutoIdHelper;
@@ -45,6 +46,7 @@ public class RepliesService {
 		return pageInfo;
 	}
 
+	@Transactional
 	public ServerResponse<?> addReplies(Reply reply) {
 		//评论人
 		User user = RequestHolder.getCurrentUser();
@@ -66,6 +68,7 @@ public class RepliesService {
 		return ServerResponse.success(reply);
 	}
 
+	@Transactional
 	public String changeStatus(String id, String status) {
 		if(Util.isEmpty(id) || Util.isEmpty(status))
 			throw new InvalidParameterException("评论id或状态不能为空");

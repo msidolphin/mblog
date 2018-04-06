@@ -14,8 +14,8 @@ public enum ResponseCode {
 	FORBIDDEN(403, "forbidden"),							// 服务器理解请求客户端的请求，但是拒绝执行此请求
 	NOT_FOUND(404, "not found"),							// 服务器无法根据客户端的请求找到资源
 	CONFLICT(409, "conflict"),								// 被请求资源与当前状态之间存在冲突
-	INTERNAL_SERVER_ERROR(500, "internal server error"),	//服务器内部错误，无法完成请求
-	NOT_IMPLEMENTED(501, "not implemented");				//服务器不支持请求的功能，无法完成请求
+	INTERNAL_SERVER_ERROR(500, "internal server error"),	// 服务器内部错误，无法完成请求
+	NOT_IMPLEMENTED(501, "not implemented");				// 服务器不支持请求的功能，无法完成请求
 
 	private Integer code;
 	private String  description;

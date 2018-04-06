@@ -4,12 +4,18 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pers.msidolphin.mblog.common.ServerResponse;
+import pers.msidolphin.mblog.common.enums.ResponseCode;
+import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.helper.AutoIdHelper;
+import pers.msidolphin.mblog.helper.RequestHolder;
+import pers.msidolphin.mblog.helper.Util;
 import pers.msidolphin.mblog.model.mapper.TagMapper;
 import pers.msidolphin.mblog.model.repository.TagRepository;
 import pers.msidolphin.mblog.object.dto.AdminTagDto;
 import pers.msidolphin.mblog.object.po.Tag;
+import pers.msidolphin.mblog.object.po.User;
 import pers.msidolphin.mblog.object.query.TagQuery;
 
 import java.util.*;
@@ -34,6 +40,7 @@ public class TagService {
      * @param tags
      * @return
      */
+    @Transactional
     public List<String> saveTags(List<String> tags, Long uid) {
         List<String> newIds = new ArrayList<>();
         for(String tag : tags) {
@@ -64,7 +71,7 @@ public class TagService {
         }else {
             //新增
             tag = new Tag();
-            tag.setFrequency(0);
+            tag.setFrequency(1);
             tag.setName(tagName);
             tag.setCreateTime(new Date());
             tag.setId(AutoIdHelper.getId());
@@ -108,7 +115,7 @@ public class TagService {
             isAdd = true;
             //新增
             tag = new Tag();
-            tag.setFrequency(0);
+            tag.setFrequency(1);
             tag.setName(tagName);
             tag.setCreateTime(new Date());
             tag.setId(AutoIdHelper.getId());
@@ -148,10 +155,12 @@ public class TagService {
         }
     }
 
+    @Transactional
     public int createRelationship(String aid, String tid) {
         return tagMapper.createRelationship(aid, tid);
     }
 
+    @Transactional
     public int brokenRelationship(String aid, String tid) {
         return tagMapper.brokenRelationship(aid, tid);
     }
@@ -164,5 +173,19 @@ public class TagService {
         Tag tag = tagRepository.findByName(name);
         if(tag == null) return null;
         return tag.getId().toString();
+    }
+
+    @Transactional
+    public ServerResponse<?> updateTagNameById(String id, String name) {
+        User user = RequestHolder.getCurrentAdmin();
+        //用户未登录
+        if(Util.isEmpty(user)) return ServerResponse.unauthorized();
+        if(Util.isEmpty(id) || Util.isEmpty(name)) throw new InvalidParameterException("标签id或标签名称不能为空");
+        //检查该标签是否存在
+        Tag tag = tagRepository.findByName(name);
+        //存在冲突
+        if (tag != null) return ServerResponse.response(ResponseCode.CONFLICT);
+        tagMapper.updateTagById(id, name, user.getId().toString());
+        return ServerResponse.success(name);
     }
 }

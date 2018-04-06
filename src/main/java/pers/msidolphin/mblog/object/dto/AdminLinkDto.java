@@ -12,6 +12,17 @@ public class AdminLinkDto {
 	private String id;
 	private String name;
 	private String url;
-	private String seq;
+	private String sort;
 	private String createTime;
+
+	@Override
+	public String toString() {
+		return "AdminLinkDto{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", url='" + url + '\'' +
+				", sort='" + sort + '\'' +
+				", createTime='" + createTime + '\'' +
+				'}';
+	}
 }

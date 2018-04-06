@@ -14,13 +14,14 @@
            t.id,
            t.name,
            t.frequency,
-           DATE_FORMAT(t.create_time, '%Y-%m-%d %H:%i%s') create_time
+           DATE_FORMAT(t.create_time, '%Y-%m-%d %H:%i:%s') create_time
        FROM tags t
        <where>
           <if test="name">
               AND t.name like #{name}
           </if>
        </where>
+        ORDER BY t.create_time DESC
     </select>
     
     <update id="updateTagById" parameterType="list">

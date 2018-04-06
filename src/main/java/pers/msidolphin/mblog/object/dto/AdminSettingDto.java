@@ -13,5 +13,6 @@ public class AdminSettingDto {
 	private String key;		//不显示KEY值
 	private String value;
 	private String name;	//显示名称
+	private Boolean isImage;
 	private String type;
 }

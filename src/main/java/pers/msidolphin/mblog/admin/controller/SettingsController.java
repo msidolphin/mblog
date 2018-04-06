@@ -1,9 +1,11 @@
 package pers.msidolphin.mblog.admin.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import pers.msidolphin.mblog.common.ServerResponse;
+import pers.msidolphin.mblog.object.dto.AdminSettingDto;
+import pers.msidolphin.mblog.object.query.SettingQuery;
+import pers.msidolphin.mblog.service.SettingService;
 
 /**
  * Created by msidolphin on 2018/3/26.
@@ -12,8 +14,16 @@ import pers.msidolphin.mblog.common.ServerResponse;
 @RequestMapping("/admin/settings")
 public class SettingsController {
 
+	@Autowired
+	private SettingService settingService;
+
 	@GetMapping("")
-	public ServerResponse<?> list() {
-		return null;
+	public ServerResponse<?> list(SettingQuery query) {
+		return settingService.getSettings(query);
+	}
+
+	@PutMapping("")
+	public ServerResponse<?> put(@RequestBody AdminSettingDto adminSettingDto) {
+		return settingService.updateSetting(adminSettingDto);
 	}
 }
