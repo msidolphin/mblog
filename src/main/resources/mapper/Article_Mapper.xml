@@ -76,4 +76,36 @@
           </set>
             WHERE id = #{id}
     </update>
+
+    <!-- 文章按月统计 选择具体的某一年进行统计 统计12个月份 -->
+    <select id="monthlyReport" parameterType="list" resultType="map">
+        SELECT
+            <foreach collection="list" item="item" index="index">
+                SUM(CASE month(a.create_time) when ${item} then 1 else 0 end) `${item}`,
+            </foreach>
+            a.type
+        FROM article a WHERE year(a.create_time) = #{year}
+        GROUP BY a.type ORDER BY a.type ASC
+    </select>
+    
+    <!-- 文章按年统计 传入start end 开始结束年份 list为年份字符串 -->
+    <select id="yearReport" parameterType="list" resultType="map">
+        SELECT
+        <foreach collection="list" item="item">
+            SUM(CASE year(a.create_time) when ${item} then 1 else 0 end) `${year}` <if test="item != end">,</if>
+        </foreach>
+        FROM article a WHERE year(a.create_time) <![CDATA[ >= ]]> #{start} AND year(a.create_time) <![CDATA[ <= ]]> #{end}
+        GROUP BY a.type ORDER BY a.type ASC
+    </select>
+
+    <!-- 统计文章类型 -->
+    <select id="articleTypeReports" parameterType="map">
+        SELECT CASE a.type
+                WHEN 0 THEN '原创'
+                WHEN 1 THEN '转载'
+                WHEN 2 THEN '翻译'
+                END type,
+              count(0) count
+        FROM article a GROUP BY a.type
+    </select>
 </mapper>

@@ -6,6 +6,7 @@ import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
 import pers.msidolphin.mblog.helper.JsonHelper;
 import pers.msidolphin.mblog.object.dto.AdminArticleDto;
+import pers.msidolphin.mblog.object.dto.ReportDto;
 import pers.msidolphin.mblog.object.po.Article;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
 import pers.msidolphin.mblog.service.ArticleService;
@@ -72,6 +73,12 @@ public class ArticlesController {
 	public ServerResponse<?> delete(@RequestBody Map<String, String> params) {
 		articleService.delete(params.get("id"));
 		return ServerResponse.response(ResponseCode.NO_CONTENT);
+	}
+
+
+	@GetMapping("/reports")
+	public ServerResponse<?> report(ReportDto reportParam) {
+		return articleService.articleReports(reportParam);
 	}
 
 }

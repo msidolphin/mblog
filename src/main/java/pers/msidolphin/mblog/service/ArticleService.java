@@ -3,8 +3,7 @@ package pers.msidolphin.mblog.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import lombok.extern.log4j.Log4j;
-import lombok.extern.slf4j.Slf4j;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -13,17 +12,18 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ArticleType;
+import pers.msidolphin.mblog.common.enums.MonthType;
+import pers.msidolphin.mblog.common.enums.ReportType;
 import pers.msidolphin.mblog.exception.AuthorizedException;
 import pers.msidolphin.mblog.exception.InvalidParameterException;
 import pers.msidolphin.mblog.exception.ServiceException;
 import pers.msidolphin.mblog.helper.*;
 import pers.msidolphin.mblog.model.mapper.ArticleMapper;
 import pers.msidolphin.mblog.model.repository.ArticleRepository;
-import pers.msidolphin.mblog.object.dto.AdminArticleDto;
-import pers.msidolphin.mblog.object.dto.ArticleDto;
-import pers.msidolphin.mblog.object.dto.CommentDto;
+import pers.msidolphin.mblog.object.dto.*;
 import pers.msidolphin.mblog.object.po.Article;
 import pers.msidolphin.mblog.object.po.User;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
@@ -333,5 +333,122 @@ public class ArticleService {
                 return criteriaQuery.where(predicates.toArray(pres)).getGroupRestriction();
             }
         };
+    }
+
+    /**
+     * 文章相关统计
+     * 分为按年 按月统计
+     * @param report {ReportDto}
+     * @return
+     */
+    public ServerResponse<?> articleReports(ReportDto report) {
+        Integer type = report.getType();
+        if (type == null) {
+            //默认按月统计
+            type = ReportType.MONTH.getKey();
+        }
+        EchartsDto echartsDto = new EchartsDto();
+        EchartsDto.Legend legend = echartsDto.new Legend();
+        EchartsDto.Title title = echartsDto.new Title();
+        EchartsDto.xAxis xAxis = echartsDto.new xAxis();
+        EchartsDto.yAxis yAxis = echartsDto.new yAxis();
+        List<EchartsDto.Series> seriesList = Lists.newArrayList();
+
+        //图例
+        legend.setOrient("horizontal");
+        legend.setTop("bottom");
+        List<Object> legendData = Lists.newArrayList();
+
+        Map<String, EchartsDto.Series> seriesMap = Maps.newHashMap();
+        for(ArticleType articleType : ArticleType.values()) {
+            //图例数据
+            legendData.add(articleType.getValue());
+
+            //series初始化数据
+            EchartsDto.Series series = echartsDto.new Series();
+            series.setName(articleType.getValue());
+            series.setType("line");
+            series.setStack("发布量");
+            seriesMap.put(articleType.getValue(), series);
+        }
+        //x轴
+        xAxis.setType("category");
+        List<Object> xAxisData = Lists.newArrayList();
+
+        //y轴
+        yAxis.setType("value");
+
+        List<Map<String, Integer>> result = Lists.newArrayList();
+        switch (type) {
+            case 0: //按月
+                //判断是否指定统计年份，若未指定，默认为当前年份
+                System.out.println("统计月份");
+                Integer year;
+                Integer maxMonth = 12;  //默认统计1-12月
+                List<String> months = Lists.newArrayList();
+                if (Util.isEmpty(report.getSpecific())) {
+                    Calendar calendar = Calendar.getInstance();
+                    year = calendar.get(Calendar.YEAR);
+                    maxMonth = calendar.get(Calendar.MONTH) + 1;  //JANUARY> which is 0
+                }else year = Integer.parseInt(report.getSpecific());
+                //获取统计月份范围
+                for(Integer i = 1 ; i <= maxMonth   ; ++i) {
+                    months.add(i.toString());
+                    //x轴
+                    xAxisData.add(MonthType.getChinese(i) + "月");
+                }
+                result = articleMapper.monthlyReport(year.toString(), maxMonth, months);
+                System.out.println("result："+ result);
+                //统计标题
+                StringBuffer titleStr = new StringBuffer(year);
+                if (maxMonth != 1) {
+                    titleStr.append(year + "年").append(MonthType.getChinese(1) + "月份到" + MonthType.getChinese(maxMonth) + "月份")
+                            .append("文章发布量统计报表");
+                }else {
+                    titleStr.append("年份").append(MonthType.getChinese(1) + "月份")
+                            .append("文章发布量统计报表");
+                }
+                title.setText(titleStr.toString());
+
+                //series
+                for(Map<String, Integer> res : result) {
+                    EchartsDto.Series series = seriesMap.get(ArticleType.get(res.get("type")).getValue());
+                    if (series != null) {
+                        List<Object> data = Lists.newArrayList();
+                        for(Integer i = 1 ; i <= maxMonth ; ++i) data.add(res.get(i.toString()));
+                        series.setData(data);
+                    }
+                }
+                //再次遍历seriesMap 检索是否存在data为null的情况 如果为null说明未统计出该分类的情况，全部置为0
+                for(String key : seriesMap.keySet()) {
+                    EchartsDto.Series series = seriesMap.get(key);
+                    if (series.getData() == null || series.getData().size() == 0) {
+                        List<Object> data = Lists.newArrayList();
+                        for(Integer i = 1  ; i <= maxMonth   ; ++i) {
+                            data.add(0);
+                        }
+                        series.setData(data);
+                    }
+                    seriesList.add(series);
+                }
+
+
+
+                break;
+            case 1: //按年
+                //按年必须指定统计范围
+
+
+                break;
+            case 2: //TODO 按周
+                break;
+        }
+        legend.setData(legendData);
+        echartsDto.setTitle(title);
+        echartsDto.setLegend(legend);
+        echartsDto.setXAxis(xAxis);
+        echartsDto.setYAxis(yAxis);
+        echartsDto.setSeries(seriesList);
+        return ServerResponse.success(echartsDto);
     }
 }

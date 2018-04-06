@@ -21,18 +21,8 @@ public enum  ArticleType {
 		return key;
 	}
 
-	public ArticleType setKey(int key) {
-		this.key = key;
-		return this;
-	}
-
 	public String getValue() {
 		return value;
-	}
-
-	public ArticleType setValue(String value) {
-		this.value = value;
-		return this;
 	}
 
 	public static ArticleType get(int key) {

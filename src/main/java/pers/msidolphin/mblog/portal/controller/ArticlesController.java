@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.object.dto.ArticleDto;
+import pers.msidolphin.mblog.object.dto.ReportDto;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
 import pers.msidolphin.mblog.service.ArticleService;
 
@@ -46,6 +47,8 @@ public class ArticlesController {
 	}
 
 
-
-
+	@GetMapping("/reports")
+	public ServerResponse<?> report(ReportDto reportParam) {
+		return articleService.articleReports(reportParam);
+	}
 }
