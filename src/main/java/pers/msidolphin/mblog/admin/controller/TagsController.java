@@ -27,4 +27,9 @@ public class TagsController {
 		return tagService.updateTagNameById(adminTagDto.getId(), adminTagDto.getName());
 	}
 
+	@GetMapping("/reports/bar")
+	public ServerResponse<?> report(@RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit) {
+		return tagService.barReport(limit);
+	}
+
 }

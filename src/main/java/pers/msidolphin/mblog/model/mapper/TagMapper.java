@@ -22,4 +22,5 @@ public interface TagMapper {
 
 	int brokenRelationship(@Param("aid") String aid,@Param("tid") String tid);
 
+	List<Map<String, Integer>> frequencyBarReport(Integer limit);
 }

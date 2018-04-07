@@ -15,8 +15,8 @@ import java.util.List;
 public class EchartsDto implements Serializable {
 	private Title title;
 	private Legend legend;
-	private xAxis xAxis;
-	private yAxis yAxis;
+	private List<xAxis> xAxis;
+	private List<yAxis> yAxis;
 	private List<Series> series;
 
 	@Getter
@@ -54,10 +54,10 @@ public class EchartsDto implements Serializable {
 
 	@Getter
 	@Setter
-	public class Series {
+	public class Series <T> {
 		private String name;
 		private String type;
 		private String stack;
-		private List<Object> data;
+		private List<T> data;
 	}
 }

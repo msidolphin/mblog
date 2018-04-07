@@ -37,8 +37,8 @@ import java.text.ParseException;
 import java.util.*;
 
 @Service
-@SuppressWarnings({ "rawtypes", "unchecked" })
-public class ArticleService {
+@SuppressWarnings("ALL")
+public class ArticleService extends BaseService{
 
     private static final Logger log = LoggerFactory.getLogger(ArticleService.class);
 
@@ -382,23 +382,24 @@ public class ArticleService {
         switch (type) {
             case 0: //按月
                 //判断是否指定统计年份，若未指定，默认为当前年份
-                System.out.println("统计月份");
                 Integer year;
                 Integer maxMonth = 12;  //默认统计1-12月
                 List<String> months = Lists.newArrayList();
-                if (Util.isEmpty(report.getSpecific())) {
-                    Calendar calendar = Calendar.getInstance();
-                    year = calendar.get(Calendar.YEAR);
+                Calendar calendar = Calendar.getInstance();
+                Integer now;
+                now = calendar.get(Calendar.YEAR);
+                if ((Util.isNotEmpty(report.getSpecific()) && report.getSpecific().equals(now.toString())) || Util.isEmpty(report.getSpecific())) {
                     maxMonth = calendar.get(Calendar.MONTH) + 1;  //JANUARY> which is 0
+                    year = now;
                 }else year = Integer.parseInt(report.getSpecific());
-                //获取统计月份范围
+                //计算统计月份范围
                 for(Integer i = 1 ; i <= maxMonth   ; ++i) {
                     months.add(i.toString());
                     //x轴
                     xAxisData.add(MonthType.getChinese(i) + "月");
                 }
+                xAxis.setData(xAxisData);
                 result = articleMapper.monthlyReport(year.toString(), maxMonth, months);
-                System.out.println("result："+ result);
                 //统计标题
                 StringBuffer titleStr = new StringBuffer(year);
                 if (maxMonth != 1) {
@@ -431,24 +432,110 @@ public class ArticleService {
                     }
                     seriesList.add(series);
                 }
-
-
-
                 break;
             case 1: //按年
                 //按年必须指定统计范围
+                if(Util.isEmpty(report.getStart()) || Util.isEmpty(report.getEnd())) return ServerResponse.badRequest("按年统计必须指定统计范围");
+                if(report.getStart() == report.getEnd()) return ServerResponse.badRequest("开始年份必须小于结束年份");
+                List<String> years = Lists.newArrayList();
+                for(Integer i = report.getStart() ; i <= report.getEnd() ; ++i ) {
+                    years.add(i.toString());
 
+                    //x轴
+                    xAxisData.add(i.toString());
+                }
+                xAxis.setData(xAxisData);
+                //title
+                StringBuffer sb = new StringBuffer();
+                sb.append(report.getStart() + "年到" + report.getEnd() + "年文章发布量统计报表");
+                title.setText(sb.toString());
+
+                //开始统计
+                result = articleMapper.yearReport(report.getStart(), report.getEnd(), years);
+
+                //series
+                for(Map<String, Integer> res : result) {
+                    EchartsDto.Series series= seriesMap.get(ArticleType.get(res.get("type")).getValue());
+                    if(series != null) {
+                        List<Object> data = Lists.newArrayList();
+                        for(Integer i = report.getStart(); i <= report.getEnd() ; ++i) {
+                            data.add(res.get(i.toString()));
+                        }
+                        series.setData(data);
+                    }
+                }
+
+                //未统计到年份数据归零
+                for(String key : seriesMap.keySet()) {
+                    EchartsDto.Series series = seriesMap.get(key);
+                    if(series.getData() == null || series.getData().size() == 0) {
+                        List<Object> data = Lists.newArrayList();
+                        for(int i = report.getStart() ; i <= report.getEnd() ; ++i) data.add(0);
+                        series.setData(data);
+                    }
+                    seriesList.add(series);
+                }
 
                 break;
             case 2: //TODO 按周
                 break;
         }
+
         legend.setData(legendData);
-        echartsDto.setTitle(title);
+//        echartsDto.setTitle(title);  //标题单独设置
         echartsDto.setLegend(legend);
-        echartsDto.setXAxis(xAxis);
-        echartsDto.setYAxis(yAxis);
+        echartsDto.setXAxis(Util.asList(xAxis));
+        echartsDto.setYAxis(Util.asList(yAxis));
         echartsDto.setSeries(seriesList);
-        return ServerResponse.success(echartsDto);
+
+        return reportResult(title, echartsDto);
     }
+
+    /**
+     * 饼状图统计
+     * @return
+     */
+    public ServerResponse<?> pieReports() {
+        EchartsDto echartsDto = new EchartsDto();
+
+        EchartsDto.Legend legend = echartsDto.new Legend();
+        EchartsDto.Title title = echartsDto.new Title();
+
+        //series初始化数据
+        EchartsDto.Series series = echartsDto.new Series();
+        series.setName("创作类型");
+        series.setType("pie");
+        List<Map<String, Object>> seriesData = Lists.newArrayList();
+
+        legend.setOrient("vertical");
+        legend.setTop("top");
+        List<Object> legendData = Lists.newArrayList();
+
+        for(ArticleType articleType : ArticleType.values()) {
+            //图例数据
+            legendData.add(articleType.getValue());
+            Map<String, Object> obj = Maps.newHashMap();
+            obj.put("name", articleType.getValue());
+            obj.put("value", 0);
+            seriesData.add(obj);
+        }
+        legend.setData(legendData);
+
+        title.setText("文章发布类型饼状图");
+
+        List<Map<String, Integer>> result = articleMapper.pieReport();
+        for(Map<String, Integer> res : result) {
+            String type = ArticleType.get(res.get("type")).getValue();
+            for(Map<String, Object> obj : seriesData ) {
+                if (obj.get("name").equals(type)) obj.put("value", res.get("count"));
+            }
+        }
+
+        series.setData(seriesData);
+        echartsDto.setSeries(Util.asList(series));
+        echartsDto.setLegend(legend);
+
+        return reportResult(title, echartsDto);
+    }
+
 }

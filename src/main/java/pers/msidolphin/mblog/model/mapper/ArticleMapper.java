@@ -19,7 +19,7 @@ public interface ArticleMapper {
 
 	List<Map<String, Integer>> monthlyReport(@Param("year") String year, @Param("maxMonth") Integer max, @Param("list") List<String> list);
 
-	Map<String, Integer> yearReport(@Param("start") Integer start, @Param("end") Integer end, @Param("list") List<String> list);
+	List<Map<String, Integer>> yearReport(@Param("start") Integer start, @Param("end") Integer end, @Param("list") List<String> list);
 
-	Map<String, Integer> typeReport();
+	List<Map<String, Integer>> pieReport();
 }

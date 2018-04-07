@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReportDto {
-	private String start;	  //开始
-	private String end;		  //结束
+	private Integer start;	  //开始
+	private Integer end;		  //结束
 	private String specific;  //特定的 月份或年份
 	private Integer type;	  //统计类型
 }

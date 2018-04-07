@@ -76,9 +76,14 @@ public class ArticlesController {
 	}
 
 
-	@GetMapping("/reports")
+	@GetMapping("/reports/line")
 	public ServerResponse<?> report(ReportDto reportParam) {
 		return articleService.articleReports(reportParam);
+	}
+
+	@GetMapping("/reports/pie")
+	public ServerResponse<?> report() {
+		return articleService.pieReports();
 	}
 
 }

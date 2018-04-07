@@ -41,4 +41,9 @@
         DELETE FROM article_tag WHERE aid = #{aid} AND tid = #{tid}
     </delete>
 
+    <!-- 标签 引用数量统计 这个就简单了 -->
+    <select id="frequencyBarReport" resultType="map" parameterType="integer">
+        SELECT t.name, t.frequency FROM tags t ORDER BY t.frequency DESC LIMIT 0, #{limit}
+    </select>
+
 </mapper>

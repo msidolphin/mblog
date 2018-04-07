@@ -2,6 +2,8 @@ package pers.msidolphin.mblog.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import pers.msidolphin.mblog.helper.Util;
 import pers.msidolphin.mblog.model.mapper.TagMapper;
 import pers.msidolphin.mblog.model.repository.TagRepository;
 import pers.msidolphin.mblog.object.dto.AdminTagDto;
+import pers.msidolphin.mblog.object.dto.EchartsDto;
 import pers.msidolphin.mblog.object.po.Tag;
 import pers.msidolphin.mblog.object.po.User;
 import pers.msidolphin.mblog.object.query.TagQuery;
@@ -21,7 +24,7 @@ import pers.msidolphin.mblog.object.query.TagQuery;
 import java.util.*;
 
 @Service
-public class TagService {
+public class TagService extends BaseService{
 
     @Autowired
     private TagRepository tagRepository;
@@ -187,5 +190,50 @@ public class TagService {
         if (tag != null) return ServerResponse.response(ResponseCode.CONFLICT);
         tagMapper.updateTagById(id, name, user.getId().toString());
         return ServerResponse.success(name);
+    }
+
+    /**
+     * 标签引用次数统计 （柱状图）
+     * @param limit
+     * @return
+     */
+    public ServerResponse<?> barReport(Integer limit) {
+        EchartsDto echartsDto = new EchartsDto();
+        EchartsDto.Series<Object> series = echartsDto.new Series();
+        EchartsDto.Title title = echartsDto.new Title();
+        EchartsDto.xAxis xAxis = echartsDto.new xAxis();
+        EchartsDto.yAxis yAxis = echartsDto.new yAxis();
+
+        yAxis.setType("value");
+
+        List< EchartsDto.yAxis> yAxes = Lists.newArrayList();
+        yAxes.add(yAxis);
+
+
+        xAxis.setType("category");
+        //标题
+        title.setText("TOP"+ limit +"标签引用次数柱状图");
+
+        List<Object> xAxisData = Lists.newArrayList();
+        List<Object> seriesData = Lists.newArrayList();
+
+        List<Map<String, Integer>> result = tagMapper.frequencyBarReport(limit);
+        for(Map<String, Integer> res : result) {
+            xAxisData.add(res.get("name"));
+            seriesData.add(res.get("frequency").toString());
+        }
+        //引用次数从小到大排序
+        Collections.reverse(xAxisData);
+        Collections.reverse(seriesData);
+        xAxis.setData(xAxisData);
+        series.setData(seriesData);
+        series.setName("引用次数");
+        series.setType("bar");
+
+        echartsDto.setSeries(Util.asList(series));
+        echartsDto.setXAxis(Util.asList(xAxis));
+        echartsDto.setYAxis(Util.asList(yAxis));
+
+        return reportResult(title, echartsDto);
     }
 }
