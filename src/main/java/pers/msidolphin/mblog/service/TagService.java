@@ -236,4 +236,8 @@ public class TagService extends BaseService{
 
         return reportResult(title, echartsDto);
     }
+
+    public int getTagCount() {
+        return tagMapper.selectTagCount();
+    }
 }

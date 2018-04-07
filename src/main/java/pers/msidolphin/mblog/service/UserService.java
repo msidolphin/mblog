@@ -93,6 +93,7 @@ public class UserService {
 		user = userRepository.findByUsernameAndPassword(username, encry);
 		if(user == null)
 			return ServerResponse.badRequest("密码错误");
+		if(user.getIsAdmin() != 1) return ServerResponse.forbidden();
 
 		//用户登录成功，生成token存入到cookie
 		String token = UUID.randomUUID().toString();
@@ -206,6 +207,7 @@ public class UserService {
 		//新增用户
 		user.setId(AutoIdHelper.getId());
 		user.setNickname(user.getUsername());
+		user.setIsAdmin(0);
 		user.setCreateTime(new Date());
 		user.setUpdateTime(new Date());
 		//随机生成头像并上传头像
@@ -249,5 +251,13 @@ public class UserService {
 		RequestHolder.removeCurrentUser();
 		RequestHolder.add(user);
 		response.addCookie(cookie);
+	}
+
+	/**
+	 * 获取用户数量(非后台用户)
+	 * @return
+	 */
+	public int getUserCount() {
+		return userMapper.selectUserCount();
 	}
 }

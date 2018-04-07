@@ -343,6 +343,11 @@ public class ArticleService extends BaseService{
      */
     public ServerResponse<?> articleReports(ReportDto report) {
         Integer type = report.getType();
+        if (report.getChartType() == null) report.setChartType(0); //默认为折线图
+
+        String chartType = "line";
+        if(report.getChartType() == 1) chartType = "bar";
+
         if (type == null) {
             //默认按月统计
             type = ReportType.MONTH.getKey();
@@ -357,6 +362,7 @@ public class ArticleService extends BaseService{
         //图例
         legend.setOrient("horizontal");
         legend.setTop("bottom");
+        legend.setLeft("center");
         List<Object> legendData = Lists.newArrayList();
 
         Map<String, EchartsDto.Series> seriesMap = Maps.newHashMap();
@@ -367,16 +373,20 @@ public class ArticleService extends BaseService{
             //series初始化数据
             EchartsDto.Series series = echartsDto.new Series();
             series.setName(articleType.getValue());
-            series.setType("line");
+            series.setType(chartType);
             series.setStack("发布量");
             seriesMap.put(articleType.getValue(), series);
         }
         //x轴
-        xAxis.setType("category");
-        List<Object> xAxisData = Lists.newArrayList();
-
-        //y轴
-        yAxis.setType("value");
+        if(!report.isVertical()) {
+            xAxis.setType("category");
+            //y轴
+            yAxis.setType("value");
+        }else {
+            yAxis.setType("category");
+            xAxis.setType("value");
+        }
+        List<Object> axisData = Lists.newArrayList();
 
         List<Map<String, Integer>> result = Lists.newArrayList();
         switch (type) {
@@ -396,9 +406,11 @@ public class ArticleService extends BaseService{
                 for(Integer i = 1 ; i <= maxMonth   ; ++i) {
                     months.add(i.toString());
                     //x轴
-                    xAxisData.add(MonthType.getChinese(i) + "月");
+                    axisData.add(MonthType.getChinese(i) + "月");
                 }
-                xAxis.setData(xAxisData);
+                //判断图表是否为垂直方向显示 即图例在x轴
+                if (!report.isVertical()) xAxis.setData(axisData);
+                else yAxis.setData(axisData);
                 result = articleMapper.monthlyReport(year.toString(), maxMonth, months);
                 //统计标题
                 StringBuffer titleStr = new StringBuffer(year);
@@ -442,9 +454,9 @@ public class ArticleService extends BaseService{
                     years.add(i.toString());
 
                     //x轴
-                    xAxisData.add(i.toString());
+                    axisData.add(i.toString());
                 }
-                xAxis.setData(xAxisData);
+                xAxis.setData(axisData);
                 //title
                 StringBuffer sb = new StringBuffer();
                 sb.append(report.getStart() + "年到" + report.getEnd() + "年文章发布量统计报表");
@@ -536,6 +548,10 @@ public class ArticleService extends BaseService{
         echartsDto.setLegend(legend);
 
         return reportResult(title, echartsDto);
+    }
+
+    public int getArticleCount() {
+        return articleMapper.selectArticleCount();
     }
 
 }

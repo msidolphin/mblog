@@ -41,6 +41,8 @@ public class EchartsDto implements Serializable {
 	@Setter
 	public class xAxis {
 		private String type;
+		private Integer min;
+		private Integer max;
 		private List<Object> data;
 	}
 
@@ -50,6 +52,7 @@ public class EchartsDto implements Serializable {
 		private String type;
 		private Integer min;
 		private Integer max;
+		private List<Object> data;
 	}
 
 	@Getter

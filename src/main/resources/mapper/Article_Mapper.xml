@@ -104,4 +104,9 @@
         SELECT a.type, count(0) count
         FROM article a GROUP BY a.type
     </select>
+
+    <!-- 统计文章数量 -->
+    <select id="selectArticleCount" resultType="int">
+      SELECT COUNT(0) FROM article a WHERE a.is_delete = '0'
+    </select>
 </mapper>

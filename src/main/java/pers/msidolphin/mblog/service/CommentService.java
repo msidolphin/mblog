@@ -111,4 +111,8 @@ public class CommentService extends BaseService{
 		return ServerResponse.success(comment);
 	}
 
+	public int getCommentCount() {
+		return commentMapper.selectCommentCount();
+	}
+
 }

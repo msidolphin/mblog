@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  * Created by msidolphin on 2018/3/31.
  */
+@Service
 public abstract class BaseService {
 
 

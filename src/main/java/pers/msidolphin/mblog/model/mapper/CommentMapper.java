@@ -17,4 +17,6 @@ public interface CommentMapper {
 	List<AdminCommentDto> findComments(CommentQuery query);
 
 	int updateStatusById(@Param("status") String status,@Param("id") String id);
+
+	int selectCommentCount();
 }

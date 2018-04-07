@@ -12,4 +12,6 @@ public interface UserMapper {
 	PortalUserDto findUserById(String id);
 
 	int updateUserById(Map<String, String> params);
+
+	int selectUserCount();
 }

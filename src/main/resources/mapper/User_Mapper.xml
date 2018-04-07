@@ -43,4 +43,8 @@
         </set>
         WHERE id = #{id}
     </update>
+
+    <select id="selectUserCount" resultType="int">
+        SELECT COUNT(0) FROM user u where u.is_admin = 0
+    </select>
 </mapper>

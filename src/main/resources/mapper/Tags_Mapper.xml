@@ -46,4 +46,7 @@
         SELECT t.name, t.frequency FROM tags t ORDER BY t.frequency DESC LIMIT 0, #{limit}
     </select>
 
+    <select id="selectTagCount" resultType="int">
+        SELECT COUNT(0) FROM tags
+    </select>
 </mapper>
