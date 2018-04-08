@@ -44,4 +44,8 @@
             l.updator = #{updator}
         WHERE l.id = #{id}
     </update>
+
+    <select id="selectLink4Portal" resultType="pers.msidolphin.mblog.object.dto.PortalLinkDto">
+        SELECT l.name, l.url FROM links l ORDER BY l.sort ASC LIMIT 1,10
+    </select>
 </mapper>

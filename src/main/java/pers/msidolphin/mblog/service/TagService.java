@@ -17,6 +17,7 @@ import pers.msidolphin.mblog.model.mapper.TagMapper;
 import pers.msidolphin.mblog.model.repository.TagRepository;
 import pers.msidolphin.mblog.object.dto.AdminTagDto;
 import pers.msidolphin.mblog.object.dto.EchartsDto;
+import pers.msidolphin.mblog.object.dto.PortalTagDto;
 import pers.msidolphin.mblog.object.po.Tag;
 import pers.msidolphin.mblog.object.po.User;
 import pers.msidolphin.mblog.object.query.TagQuery;
@@ -239,5 +240,9 @@ public class TagService extends BaseService{
 
     public int getTagCount() {
         return tagMapper.selectTagCount();
+    }
+
+    public List<PortalTagDto> selectTag4Portal() {
+        return tagMapper.selectTag4Portal();
     }
 }

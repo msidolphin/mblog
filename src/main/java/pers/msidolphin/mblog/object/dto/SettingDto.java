@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AdminSettingDto {
+public class SettingDto {
 	private String id;
 	private String key;		//不显示KEY值
 	private String value;

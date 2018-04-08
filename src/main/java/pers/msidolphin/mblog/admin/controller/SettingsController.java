@@ -3,7 +3,7 @@ package pers.msidolphin.mblog.admin.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pers.msidolphin.mblog.common.ServerResponse;
-import pers.msidolphin.mblog.object.dto.AdminSettingDto;
+import pers.msidolphin.mblog.object.dto.SettingDto;
 import pers.msidolphin.mblog.object.query.SettingQuery;
 import pers.msidolphin.mblog.service.SettingService;
 
@@ -23,7 +23,7 @@ public class SettingsController {
 	}
 
 	@PutMapping("")
-	public ServerResponse<?> put(@RequestBody AdminSettingDto adminSettingDto) {
+	public ServerResponse<?> put(@RequestBody SettingDto adminSettingDto) {
 		return settingService.updateSetting(adminSettingDto);
 	}
 }

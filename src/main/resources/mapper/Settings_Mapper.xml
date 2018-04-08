@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="pers.msidolphin.mblog.model.mapper.SettingMapper">
 
-    <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.AdminSettingDto" >
+    <resultMap id="BaseResultMap" type="pers.msidolphin.mblog.object.dto.SettingDto" >
         <id     property="id"           column="id"           jdbcType="INTEGER" javaType="java.lang.String" />
         <result property="key"          column="key"          jdbcType="VARCHAR" javaType="java.lang.String" />
         <result property="value"        column="value"        jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -54,4 +54,8 @@
             </set>
         WHERE s.id = #{id}
     </update>
+
+    <select id="selectPortalSettings" resultMap="BaseResultMap">
+        SELECT s.key_value `key`, s.value FROM setting s WHERE s.type = 2 UNION SELECT s.key_value `key`, s.value FROM setting s WHERE s.type = 0
+    </select>
 </mapper>

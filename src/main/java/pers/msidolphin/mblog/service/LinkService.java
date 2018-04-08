@@ -16,11 +16,13 @@ import pers.msidolphin.mblog.helper.Util;
 import pers.msidolphin.mblog.model.mapper.LinkMapper;
 import pers.msidolphin.mblog.model.repository.LinkRepository;
 import pers.msidolphin.mblog.object.dto.AdminLinkDto;
+import pers.msidolphin.mblog.object.dto.PortalLinkDto;
 import pers.msidolphin.mblog.object.po.Link;
 import pers.msidolphin.mblog.object.po.User;
 import pers.msidolphin.mblog.object.query.LinkQuery;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,5 +82,8 @@ public class LinkService {
 		return ServerResponse.success(link);
 	}
 
+	public List<PortalLinkDto> selectLinks4Portal() {
+		return linkMapper.selectLink4Portal();
+	}
 
 }

@@ -1,6 +1,7 @@
 package pers.msidolphin.mblog.model.mapper;
 
 import pers.msidolphin.mblog.object.dto.AdminLinkDto;
+import pers.msidolphin.mblog.object.dto.PortalLinkDto;
 import pers.msidolphin.mblog.object.query.LinkQuery;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface LinkMapper {
 	List<AdminLinkDto> findLinks(LinkQuery query);
 
 	int updateLinkById(Map<String, String> params);
+
+	List<PortalLinkDto> selectLink4Portal();
 }

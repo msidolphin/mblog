@@ -2,6 +2,7 @@ package pers.msidolphin.mblog.model.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import pers.msidolphin.mblog.object.dto.AdminTagDto;
+import pers.msidolphin.mblog.object.dto.PortalTagDto;
 import pers.msidolphin.mblog.object.query.TagQuery;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface TagMapper {
 	List<Map<String, Integer>> frequencyBarReport(Integer limit);
 
 	int selectTagCount();
+
+	List<PortalTagDto> selectTag4Portal();
 }

@@ -49,4 +49,9 @@
     <select id="selectTagCount" resultType="int">
         SELECT COUNT(0) FROM tags
     </select>
+
+    <!-- 查询引用频次top10的标签给前台展示 -->
+    <select id="selectTag4Portal" resultType="pers.msidolphin.mblog.object.dto.PortalTagDto">
+        SELECT  t.id, t.name FROM tags t ORDER BY t.frequency DESC LIMIT 0,10
+    </select>
 </mapper>
