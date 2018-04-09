@@ -195,6 +195,12 @@ public class UserService {
 		//验证用户是否存在
 		User dbUser = userRepository.findByUsernameAndEmail(user.getUsername(), user.getEmail());
 		if (dbUser != null) {
+			//更新用户网址
+			userRepository.updateWebsiteById(user.getWebsite(), dbUser.getId().toString());
+			dbUser.setWebsite(user.getWebsite());
+			//更改redis缓存
+			redisHelper.setValue(RequestHolder.getPortalRequestToken(), JsonHelper.object2String(dbUser));
+
 			//存在该用户 直接登录
 			addCookie(response, request.getSession(), dbUser);
 			PortalUserDto userDto = new PortalUserDto();

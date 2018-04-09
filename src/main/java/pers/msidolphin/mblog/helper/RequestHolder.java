@@ -21,6 +21,8 @@ public class RequestHolder {
 	//保存后台请求token信息 即cookie
 	private static final ThreadLocal<String> adminRequestToken = new ThreadLocal<>();
 
+	private static final ThreadLocal<String> portalRequestToken = new ThreadLocal<>();
+
 	//本次请求
 	private static final ThreadLocal<HttpServletRequest> requestHolder = new ThreadLocal<>();
 
@@ -36,6 +38,8 @@ public class RequestHolder {
 
 	public static void add(String token) {adminRequestToken.set(token);}
 
+	public static void addPortalRequestToken(String token) {portalRequestToken.set(token);}
+
 	public static User getCurrentUser() {
 		return userHolder.get();
 	}
@@ -47,6 +51,8 @@ public class RequestHolder {
 	}
 
 	public static String getRequestToken() {return adminRequestToken.get();}
+
+	public static String getPortalRequestToken() {return portalRequestToken.get();}
 
 	public static void removeCurrentRequest() {
 		requestHolder.remove();
@@ -60,10 +66,13 @@ public class RequestHolder {
 
 	public static void removeAdminRequestToken() {adminRequestToken.remove();}
 
+	public static void removePortalRequestToken() {portalRequestToken.remove();}
+
 	public static void removeAll() {
 		removeCurrentRequest();
 		removeCurrentUser();
 		removeCurrentAdmini();
 		removeAdminRequestToken();
+		removePortalRequestToken();
 	}
 }

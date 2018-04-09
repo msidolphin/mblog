@@ -24,4 +24,6 @@ public interface ArticleMapper {
 	List<Map<String, Integer>> pieReport();
 
 	int selectArticleCount();
+
+	Integer selectArtcileCommentAndReplyCount(String id);
 }

@@ -247,7 +247,6 @@ public class ArticleService extends BaseService{
         Assert.notNull(id);
         List<ArticleDto> articleDtos = articleMapper.findArticles(new ArticleQuery().setId(id));
         ArticleDto articleDto = null;
-        System.out.println(articleDtos.size());
         if(Util.isNotEmpty(articleDtos) && articleDtos.size() == 1) {
 
             articleDto = articleDtos.get(0);
@@ -255,13 +254,15 @@ public class ArticleService extends BaseService{
             articleDto.setTypeName(ArticleType.get(articleDto.getTypeCode()).getValue());
             //获取评论信息
             PageInfo<CommentDto> comments = commentService.getComments(id, 10, 1);
-            //统计总回复数
-            int sum = 0;
-            for(CommentDto comment : comments.getList())  {
-                sum += comment.getReplyCount();
-            }
-            articleDto.setReplies(sum + articleDto.getCommentCount());
+
+            Integer replies = articleMapper.selectArtcileCommentAndReplyCount(articleDto.getId());
+            //获取评论和回复数
+            articleDto.setReplies(replies != null ? replies : 0);
             articleDto.setCommentList(comments);
+
+            //获取文章标签
+            String tags = getArticleTags(articleDto.getId());
+            articleDto.setTags(tags);
         }else {
             //文章不存在
             throw new ServiceException("文章不存在或返回多个文章记录");
@@ -552,6 +553,18 @@ public class ArticleService extends BaseService{
 
     public int getArticleCount() {
         return articleMapper.selectArticleCount();
+    }
+
+    private String getArticleTags(String id) {
+        //查询文章标签
+        List<Map<String, Object>> tags = tagService.getTags(id);
+        System.out.println("tags:"+ tags);
+        StringBuffer tagsName = new StringBuffer();
+        StringBuffer tagsId = new StringBuffer();
+        for(Map<String, Object> tag : tags) {
+            tagsName.append(tag.get("name").toString()).append(",");
+        }
+        return tagsName.substring(0, tagsName.lastIndexOf(","));
     }
 
 }

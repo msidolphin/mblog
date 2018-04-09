@@ -109,4 +109,9 @@
     <select id="selectArticleCount" resultType="int">
       SELECT COUNT(0) FROM article a WHERE a.is_delete = '0'
     </select>
+    
+    <!-- 获取文章评论和回复总数 -->
+    <select id="selectArtcileCommentAndReplyCount" resultType="integer" parameterType="string">
+        SELECT SUM((SELECT count(0) + 1 FROM replies r WHERE r.comment_id = c.id)) count FROM comment c WHERE c.article_id = #{id}
+    </select>
 </mapper>
