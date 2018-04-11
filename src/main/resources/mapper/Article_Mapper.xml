@@ -45,7 +45,7 @@
                 <!--</foreach>-->
                 <!-- 表结构改变了，那么标签查询条件t也应有所不同 -->
                 <foreach collection="tagIdList" item="id">
-                    AND EXISTS(SELECT t.id FROM tags t INNER JOIN article_tag at on t.id = at.tid WHERE t.id = #{id})
+                    AND EXISTS(SELECT t.id FROM tags t INNER JOIN article_tag at on t.id = at.tid WHERE t.id = #{id} and at.aid = a.id)
                 </foreach>
             </if>
             <if test="id != null">

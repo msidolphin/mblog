@@ -78,6 +78,6 @@
     </update>
     
     <select id="selectCommentCount" resultType="int">
-        SELECT count(0) FROM (SELECT c.status FROM comment c UNION ALL SELECT r.status FROM replies r) m WHERE m.status = 1
+        SELECT count(0) FROM (SELECT c.status FROM comment c UNION ALL SELECT r.status FROM replies r) m WHERE m.status = 0
     </select>
 </mapper>

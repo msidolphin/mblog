@@ -195,14 +195,18 @@ public class UserService {
 		//验证用户是否存在
 		User dbUser = userRepository.findByUsernameAndEmail(user.getUsername(), user.getEmail());
 		if (dbUser != null) {
-			//更新用户网址
-			userRepository.updateWebsiteById(user.getWebsite(), dbUser.getId().toString());
-			dbUser.setWebsite(user.getWebsite());
-			//更改redis缓存
-			redisHelper.setValue(RequestHolder.getPortalRequestToken(), JsonHelper.object2String(dbUser));
-
-			//存在该用户 直接登录
-			addCookie(response, request.getSession(), dbUser);
+			//如果用户改变自己的个人网址，则更新用户网址和刷新缓存
+			if((dbUser.getWebsite() != null && dbUser.getWebsite().equals(user.getWebsite())) || Util.isEmpty(dbUser.getWebsite()) && Util.isNotEmpty(user.getWebsite())) {
+				userRepository.updateWebsiteById(user.getWebsite(), dbUser.getId().toString());
+				dbUser.setWebsite(user.getWebsite());
+				//存在该用户 直接登录
+				addCookie(response, request.getSession(), dbUser);
+				//更改redis缓存
+				String key = RequestHolder.getPortalRequestToken();
+				if (key == null)
+					key = RequestHolder.getCurrentRequest().getSession().getId();
+				redisHelper.setValue(key, JsonHelper.object2String(dbUser));
+			}
 			PortalUserDto userDto = new PortalUserDto();
 			userDto.setId(dbUser.getId().toString());
 			userDto.setAvatar(dbUser.getAvatar());
@@ -251,6 +255,7 @@ public class UserService {
 		Cookie cookie = new Cookie(propertiesHelper.getValue("blog.user.session.key"), session.getId());
 		cookie.setPath("/");
 		cookie.setDomain("localhost");
+		cookie.setMaxAge(propertiesHelper.getInt("blog.admin.user.token.timeout"));
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 		response.setHeader("Access-Control-Allow-Origin", RequestHolder.getCurrentRequest().getHeader("Origin"));
 		//更新当前用户

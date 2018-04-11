@@ -4,6 +4,8 @@ import com.github.pagehelper.PageInfo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * Created by msidolphin on 2018/3/27.
  */
@@ -22,6 +24,9 @@ public class ArticleDto{
 
 	//文章标签
 	private String tags;
+
+	//文章标签数组
+	private List<String> tagArray;
 
 	//文章摘要
 	private String summary;

@@ -93,9 +93,13 @@ public class ArticleService extends BaseService{
         for(ArticleDto articleDto : lists) {
             List<Map<String, Object>> tags = tagService.getTags(articleDto.getId());
             StringBuffer tagsName = new StringBuffer();
+            List<String> tagArray = Lists.newArrayList();
             for(Map<String, Object> tag : tags) {
                 tagsName.append(tag.get("name").toString()).append(",");
+                tagArray.add(tag.get("name").toString());
             }
+            articleDto.setTagArray(tagArray);
+            if(Util.isNotEmpty(articleDto.getThumbnail())) articleDto.setThumbnail(propertiesHelper.getValue("blog.image.server") +  articleDto.getThumbnail());
             articleDto.setTags(tagsName.substring(0, tagsName.lastIndexOf(",")));
         }
         return new PageInfo<>(lists);
@@ -138,7 +142,6 @@ public class ArticleService extends BaseService{
             article.setIsDelete(0);
             article.setViews(0);
             article.setVote(0);
-            article.setSummary("");
             //====
             //保存文章
             articleRepository.save(article);
@@ -199,6 +202,8 @@ public class ArticleService extends BaseService{
         }
         Optional<Article> optionalArticle = articleRepository.findById(id.toString());
         Article article = optionalArticle.get();
+        //处理文章缩略图 加上图片服务器域名
+        if(Util.isNotEmpty(article.getThumbnail())) article.setThumbnail(propertiesHelper.getValue("blog.image.server") +  article.getThumbnail());
         //获取文章标签
         AdminArticleDto adminArticleDto = new AdminArticleDto();
         BeanUtils.copyProperties(article, adminArticleDto);
