@@ -187,6 +187,7 @@ public class FileHelper {
 	 * @param extName
 	 * @return
 	 */
+	@SuppressWarnings("ALL")
 	public static String generatePath(String fileName, String extName) {
 		StringBuilder path = new StringBuilder();
 		Calendar calendar = Calendar.getInstance();

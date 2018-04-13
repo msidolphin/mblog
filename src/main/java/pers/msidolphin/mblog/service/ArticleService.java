@@ -239,6 +239,17 @@ public class ArticleService extends BaseService{
     @Transactional
     public void delete(String id) {
         if(Util.isEmpty(id)) throw new InvalidParameterException("文章id不能为空");
+        User user = RequestHolder.getCurrentAdmin();
+        if (Util.isEmpty(user)) throw new AuthorizedException();
+        //删除文章相关联的标签
+        //先查询出文章相关联的标签
+        List<String> ids = tagService.getTagIdsByArticleId(id);
+        //删除关联和减少标签引用次数
+        for(String tagId : ids) {
+            //删除关联
+            tagService.brokenRelationship(id, tagId);
+            tagService.delTagById(tagId, user.getId());
+        }
         articleRepository.deleteById(id);
     }
 
@@ -572,4 +583,26 @@ public class ArticleService extends BaseService{
         return tagsName.substring(0, tagsName.lastIndexOf(","));
     }
 
+    /**
+     * 获取被逻辑删除的文章
+     * @param query
+     * @return
+     * @throws Exception
+     */
+    public PageInfo<ArticleDto> getDeleteArtcile(ArticleQuery query) throws Exception {
+        query.setIsDelete(1);
+        return getArticles(query);
+    }
+
+    public String recoverArticle(String id) {
+        if(Util.isEmpty(id)) throw new InvalidParameterException("文章id不能为空");
+        Article article = new Article();
+        article.setId(id);
+        article.setIsDelete(0);
+        User user = RequestHolder.getCurrentAdmin();
+        if (Util.isEmpty(user)) throw new AuthorizedException();
+        article.setUpdator(user.getId());
+        articleMapper.updateById(article);
+        return id;
+    }
 }

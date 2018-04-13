@@ -140,6 +140,26 @@ public class TagService extends BaseService{
         }
     }
 
+    public void delTagById(String tagId, Long uid) {
+        Optional<Tag> optional = tagRepository.findById(Long.parseLong(tagId));
+        Tag tag = optional.get();
+        if(tag == null) {
+            return;
+        }else {
+            int newCount = tag.getFrequency() - 1;
+            if(newCount <= 0) {
+                //该标签引用数量为0，物理删除即可
+                tagRepository.deleteByName(tag.getName());
+                return;
+            }else {
+                //引用数量-1
+                tag.setFrequency(newCount);
+                tag.setUpdator(uid);
+                tagRepository.save(tag);
+            }
+        }
+    }
+
     public void delTag(String tagName, Long uid) {
         Tag tag = tagRepository.findByName(tagName);
         if(tag == null) {
@@ -244,5 +264,9 @@ public class TagService extends BaseService{
 
     public List<PortalTagDto> selectTag4Portal() {
         return tagMapper.selectTag4Portal();
+    }
+
+    public List<String> getTagIdsByArticleId(String id) {
+        return tagMapper.selectTagIdsByArticleId(id);
     }
 }

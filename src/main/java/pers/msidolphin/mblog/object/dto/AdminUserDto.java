@@ -9,7 +9,6 @@ import javax.validation.constraints.NotEmpty;
 /**
  * Created by msidolphin on 2018/4/4.
  */
-@Validation
 @Getter
 @Setter
 public class AdminUserDto {

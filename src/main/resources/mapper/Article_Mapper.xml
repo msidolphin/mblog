@@ -29,7 +29,7 @@
         (SELECT count(0) cnum FROM comment c WHERE c.article_id = a.id) comment_count,
         DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,
         DATE_FORMAT(a.update_time,'%Y-%m-%d %H:%i:%s') update_time
-        FROM article a WHERE 1 = 1 AND a.is_delete = 0
+        FROM article a WHERE 1 = 1
             <if test="title != null">
                 AND a.title LIKE #{title}
             </if>
@@ -38,6 +38,9 @@
             </if>
             <if test="endTime != null">
                 AND a.create_time <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="isDelete != null">
+                AND a.is_delete = #{isDelete}
             </if>
             <if test="tags != null">
                 <!--<foreach collection="tagList" item="tag" >-->
@@ -70,6 +73,9 @@
             </if>
             <if test="type != null">
                 type = #{type},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete},
             </if>
               update_time = now(),
               updator = #{updator}

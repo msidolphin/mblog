@@ -26,4 +26,5 @@ public interface ArticleMapper {
 	int selectArticleCount();
 
 	Integer selectArtcileCommentAndReplyCount(String id);
+
 }

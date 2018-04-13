@@ -28,4 +28,6 @@ public interface TagMapper {
 	int selectTagCount();
 
 	List<PortalTagDto> selectTag4Portal();
+
+	List<String> selectTagIdsByArticleId(String id);
 }

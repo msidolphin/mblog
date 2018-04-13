@@ -21,9 +21,20 @@ public class ArticleQuery extends BaseQuery {
 
 	private List<String> tagIdList;
 
+	private Integer isDelete;
+
 	private String startTime;
 
 	private String endTime;
+
+	public Integer getIsDelete() {
+		return isDelete;
+	}
+
+	public ArticleQuery setIsDelete(Integer isDelete) {
+		this.isDelete = isDelete;
+		return this;
+	}
 
 	/**
 	 * 文章右模糊查询

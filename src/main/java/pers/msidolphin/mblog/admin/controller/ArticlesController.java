@@ -28,6 +28,7 @@ public class ArticlesController {
 
 	@GetMapping("")
 	public ServerResponse<?> list(ArticleQuery query) throws ParseException {
+		System.out.println("isDelete:" + query.getIsDelete());
 		return ServerResponse.success(articleService.getArticles(query));
 	}
 
@@ -62,6 +63,11 @@ public class ArticlesController {
 	public ServerResponse<?> logicDelete(@RequestBody Map<String, String> params) {
 		articleService.logicDelete(params.get("id"));
 		return ServerResponse.response(ResponseCode.NO_CONTENT);
+	}
+
+	@PostMapping("/{id}")
+	public ServerResponse<?> recover(@PathVariable String id) {
+		return ServerResponse.success(articleService.recoverArticle(id));
 	}
 
 	/**

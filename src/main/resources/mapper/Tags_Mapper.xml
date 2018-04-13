@@ -54,4 +54,9 @@
     <select id="selectTag4Portal" resultType="pers.msidolphin.mblog.object.dto.PortalTagDto">
         SELECT  t.id, t.name FROM tags t ORDER BY t.frequency DESC LIMIT 0,10
     </select>
+
+    <!-- 查询文章所有关联的标签id -->
+    <select id="selectTagIdsByArticleId" parameterType="string" resultType="string">
+        SELECT t.tid FROM article_tag t WHERE t.aid = #{id}
+    </select>
 </mapper>
