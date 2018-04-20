@@ -34,6 +34,9 @@
 		<apache.commons.codec.version>1.10</apache.commons.codec.version>
 		<org.codehaus.jackson.version>1.9.13</org.codehaus.jackson.version>
 		<org.jsoup.version>1.11.2</org.jsoup.version>
+		<elasticsearch.version>5.6.8</elasticsearch.version>
+		<log4j-api.version>2.7</log4j-api.version>
+		<log4j-core.version>2.7</log4j-core.version>
 	</properties>
 
 	<dependencies>
@@ -236,6 +239,24 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
 		</dependency>
 
 	</dependencies>

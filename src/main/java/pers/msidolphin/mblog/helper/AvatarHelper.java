@@ -56,6 +56,14 @@ public class AvatarHelper {
 	}
 
 
+	/**
+	 *
+	 * @param nickname 用户昵称
+	 * @param path		文件临时保存路径
+	 * @param fileName	文件名称
+	 * @return	{String} [文件保存路径]
+	 * @throws IOException
+	 */
 	public static String generateAvatar(String nickname, String path, String fileName) throws IOException {
 		if(nickname == null) {
 			return null;

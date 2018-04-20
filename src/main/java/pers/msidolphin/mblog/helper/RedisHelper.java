@@ -15,21 +15,12 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisHelper {
 
+	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
 
 	public RedisHelper setValue(String key, String value) {
 		redisTemplate.opsForValue().set(key, value);
 		return this;
-	}
-
-	@Autowired
-	public void setRedisTemplate(RedisTemplate redisTemplate) {
-		RedisSerializer redisSerializer = new StringRedisSerializer();
-		redisTemplate.setKeySerializer(redisSerializer);
-		redisTemplate.setValueSerializer(redisSerializer);
-		redisTemplate.setHashKeySerializer(redisSerializer);
-		redisTemplate.setHashValueSerializer(redisSerializer);
-		this.redisTemplate = redisTemplate;
 	}
 
 	public RedisHelper setValue(String key, String value, Long timeout) {

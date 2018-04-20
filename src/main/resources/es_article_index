@@ -1,0 +1,26 @@
+{
+  "settings": {
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "doc": {
+      "dynamic": false,
+      "properties": {
+        "article_id": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "ik_smart"
+        },
+        "tag": {
+          "type": "keyword"
+        },
+        "content": {
+          "type": "text",
+          "analyzer": "ik_smart"
+        }
+      }
+    }
+  }
+}
