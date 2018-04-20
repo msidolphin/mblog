@@ -19,12 +19,16 @@ public class ElasticsearchConfig {
 
 	@Bean
 	public TransportClient elasticsearchClient() throws UnknownHostException {
+		// es集群
 		InetSocketTransportAddress master = new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300);
 		InetSocketTransportAddress slave_01 = new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300);
-
-		Settings settings = Settings.builder().put("cluster.name", "elastic").build();
+		InetSocketTransportAddress slave_02 = new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300);
+		Settings settings = Settings.builder()
+				.put("cluster.name", "elastic")
+				.put("client.transport.sniff", true)
+				.build();
 		TransportClient elasticsearchClient = new PreBuiltTransportClient(settings);
-		elasticsearchClient.addTransportAddress(master).addTransportAddress(slave_01);
+		elasticsearchClient.addTransportAddress(master).addTransportAddress(slave_01).addTransportAddress(slave_02);
 		return elasticsearchClient;
 	}
 }

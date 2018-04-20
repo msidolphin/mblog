@@ -6,19 +6,36 @@
     "doc": {
       "dynamic": false,
       "properties": {
-        "article_id": {
-          "type": "keyword"
+        "articleId": {
+          "type": "keyword",
+          "index": "not_analyzed"
         },
         "title": {
           "type": "text",
           "analyzer": "ik_smart"
         },
         "tag": {
-          "type": "keyword"
+          "type": "keyword",
+          "index": "not_analyzed"
         },
         "content": {
           "type": "text",
           "analyzer": "ik_smart"
+        },
+        "summary": {
+          "type": "text",
+          "analyzer": "ik_smart"
+        },
+        "views": {
+          "type": "integer"
+        },
+        "createTime": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||epoch_millis"
+        },
+        "updateTime": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss||epoch_millis"
         }
       }
     }

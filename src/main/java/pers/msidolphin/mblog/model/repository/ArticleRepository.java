@@ -10,6 +10,8 @@ import pers.msidolphin.mblog.object.po.Article;
 @Repository
 public interface ArticleRepository extends CrudRepository<Article, String> {
 
+	Article findByArticleIdAndIsDelete(String article, Integer isDelete);
+
 	@Transactional
 	@Modifying(clearAutomatically = true)
 	@Query(value = "update article a set a.is_delete = ?1 where a.id = ?2", nativeQuery = true)

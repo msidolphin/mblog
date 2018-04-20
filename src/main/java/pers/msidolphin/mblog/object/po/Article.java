@@ -19,7 +19,7 @@ public class Article {
 
 	@Id
 	@Column(name = "id")
-	private String id;			 //主键
+	private String articleId;			 //主键
 
 	@Column(name = "title")
 	@NotEmpty(message = "文章标题不能为空")
@@ -68,7 +68,7 @@ public class Article {
 	@Override
 	public String toString() {
 		return "文章：{" +
-				"id=" + id +
+				"id=" + articleId +
 				", title='" + title + '\'' +
 				", thumbnail='" + thumbnail + '\'' +
 				", summary='" + summary + '\'' +

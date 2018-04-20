@@ -25,6 +25,8 @@ public class ArticleDto{
 	//文章标签
 	private String tags;
 
+	private List<String> tag;
+
 	//文章标签数组
 	private List<String> tagArray;
 

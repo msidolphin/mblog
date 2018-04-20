@@ -113,7 +113,7 @@ public class ArticleService extends BaseService{
         Article article = new Article();
         BeanUtils.copyProperties(articleDto,article);
         //判断id是否为空，若id
-        String id = article.getId();
+        String id = article.getArticleId();
 
         List<String> dels;
         List<String> adds;
@@ -124,14 +124,14 @@ public class ArticleService extends BaseService{
 
         if(Util.isEmpty(id)) {
             //新增操作
-            article.setId(AutoIdHelper.getId().toString());
+            article.setArticleId(AutoIdHelper.getId().toString());
             //判断是否新增标签
             if(Util.isNotEmpty(articleDto.getTags())) {
                 //tags字段现在不存入数据库
                 List<String> ids = tagService.saveTags4newArticle(Util.asList(articleDto.getTags().split(",")), user.getId());
                 for(String nid : ids) {
                     //建立关联
-                    tagService.createRelationship(article.getId().toString(), nid);
+                    tagService.createRelationship(article.getArticleId().toString(), nid);
                 }
             }
             article.setCreator(user.getId());
@@ -171,7 +171,7 @@ public class ArticleService extends BaseService{
 
                 //打破文章与标签的原有关系
                 for(int i = 0 ; i < delIds.size() ; ++i)
-                    tagService.brokenRelationship(article.getId().toString(), delIds.get(i));
+                    tagService.brokenRelationship(article.getArticleId().toString(), delIds.get(i));
 
             }
             if(adds.size() > 0) {
@@ -182,7 +182,7 @@ public class ArticleService extends BaseService{
                 }
                 //建立关联
                 for(int i = 0 ; i < addIds.size() ; ++i)
-                    tagService.createRelationship(article.getId().toString(), addIds.get(i));
+                    tagService.createRelationship(article.getArticleId().toString(), addIds.get(i));
 
             }
             article.setUpdator(user.getId());
@@ -208,7 +208,7 @@ public class ArticleService extends BaseService{
         AdminArticleDto adminArticleDto = new AdminArticleDto();
         BeanUtils.copyProperties(article, adminArticleDto);
         //查询文章标签
-        List<Map<String, Object>> tags = tagService.getTags(article.getId());
+        List<Map<String, Object>> tags = tagService.getTags(article.getArticleId());
         System.out.println("tags:"+ tags);
         StringBuffer tagsName = new StringBuffer();
         StringBuffer tagsId = new StringBuffer();
@@ -574,13 +574,21 @@ public class ArticleService extends BaseService{
     private String getArticleTags(String id) {
         //查询文章标签
         List<Map<String, Object>> tags = tagService.getTags(id);
-        System.out.println("tags:"+ tags);
         StringBuffer tagsName = new StringBuffer();
-        StringBuffer tagsId = new StringBuffer();
         for(Map<String, Object> tag : tags) {
             tagsName.append(tag.get("name").toString()).append(",");
         }
         return tagsName.substring(0, tagsName.lastIndexOf(","));
+    }
+
+    public List<String> getArticleTagsToList(String id){
+        //查询文章标签
+        List<Map<String, Object>> tags = tagService.getTags(id);
+        List<String> tagList = Lists.newArrayList();
+        for(Map<String, Object> tag : tags) {
+           tagList.add(tag.get("name").toString());
+        }
+        return tagList;
     }
 
     /**
@@ -597,7 +605,7 @@ public class ArticleService extends BaseService{
     public String recoverArticle(String id) {
         if(Util.isEmpty(id)) throw new InvalidParameterException("文章id不能为空");
         Article article = new Article();
-        article.setId(id);
+        article.setArticleId(id);
         article.setIsDelete(0);
         User user = RequestHolder.getCurrentAdmin();
         if (Util.isEmpty(user)) throw new AuthorizedException();
