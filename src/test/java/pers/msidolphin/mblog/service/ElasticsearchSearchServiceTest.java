@@ -40,4 +40,19 @@ public class ElasticsearchSearchServiceTest {
 		}
 		Assert.assertFalse(true);
 	}
+
+	@Test
+	public void removeSuccess() {
+		String id = "433737094465060864";
+		service.index(id);
+		boolean result = service.remove(id);
+		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void removeFailed() {
+		String id = "aaa";
+		boolean result = service.remove(id);
+		Assert.assertFalse(result);
+	}
 }

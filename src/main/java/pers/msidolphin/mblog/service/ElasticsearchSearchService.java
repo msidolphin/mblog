@@ -94,7 +94,12 @@ public class ElasticsearchSearchService implements ISearchService {
 
 	@Override
 	public boolean remove(String id) {
-		return false;
+		BulkByScrollResponse response = DeleteByQueryAction.INSTANCE.newRequestBuilder(elasticsearchClient)
+				.filter(QueryBuilders.termQuery(ArticleIndexTemplate.ARTICLE_ID, id))
+				.source(ArticleIndexTemplate.INDEX_NAME).get();
+		log.debug("delete article index {} success, deleted count: {} ", id, response.getDeleted());
+		if (response.getDeleted() == 0) return false;
+		return true;
 	}
 
 	/**
