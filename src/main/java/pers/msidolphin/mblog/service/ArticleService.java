@@ -183,10 +183,9 @@ public class ArticleService extends BaseService{
                 //建立关联
                 for(int i = 0 ; i < addIds.size() ; ++i)
                     tagService.createRelationship(article.getArticleId().toString(), addIds.get(i));
-
             }
             article.setUpdator(user.getId());
-            articleMapper.updateById(article);
+            articleMapper.updateByArticleId(article);
         }
         return article;
     }
@@ -227,8 +226,9 @@ public class ArticleService extends BaseService{
      * @return {int} 影响行数
      */
     @Transactional
-    public int logicDelete(String id) {
-        return articleRepository.updateStatusById(1, id);
+    public String logicDelete(String id) {
+        articleRepository.updateStatusById(1, id);
+        return id;
     }
 
 
@@ -237,7 +237,7 @@ public class ArticleService extends BaseService{
      * @param id 文章id
      */
     @Transactional
-    public void delete(String id) {
+    public String delete(String id) {
         if(Util.isEmpty(id)) throw new InvalidParameterException("文章id不能为空");
         User user = RequestHolder.getCurrentAdmin();
         if (Util.isEmpty(user)) throw new AuthorizedException();
@@ -251,6 +251,7 @@ public class ArticleService extends BaseService{
             tagService.delTagById(tagId, user.getId());
         }
         articleRepository.deleteById(id);
+        return id;
     }
 
 
@@ -610,7 +611,7 @@ public class ArticleService extends BaseService{
         User user = RequestHolder.getCurrentAdmin();
         if (Util.isEmpty(user)) throw new AuthorizedException();
         article.setUpdator(user.getId());
-        articleMapper.updateById(article);
+        articleMapper.updateByArticleId(article);
         return id;
     }
 }

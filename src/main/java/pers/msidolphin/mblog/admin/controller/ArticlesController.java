@@ -38,8 +38,8 @@ public class ArticlesController {
 								       @RequestParam(value = "originTagsId", required = false)  String originTagsId) {
 		try {
 			AdminArticleDto articleObj = JsonHelper.string2Object(article, AdminArticleDto.class);
-			articleService.saveArticle(articleObj, originTags, originTagsId);
-			return ServerResponse.success(articleObj);
+			Article article1 = articleService.saveArticle(articleObj, originTags, originTagsId);
+			return ServerResponse.success(article1);
 		} catch (IOException e) {
 			return ServerResponse.internalError(e.getMessage());
 		}
@@ -61,8 +61,8 @@ public class ArticlesController {
 	 */
 	@PutMapping("")
 	public ServerResponse<?> logicDelete(@RequestBody Map<String, String> params) {
-		articleService.logicDelete(params.get("id"));
-		return ServerResponse.response(ResponseCode.NO_CONTENT);
+		String id = articleService.logicDelete(params.get("id"));
+		return ServerResponse.response(ResponseCode.NO_CONTENT, id);
 	}
 
 	@PostMapping("/{id}")
@@ -77,8 +77,8 @@ public class ArticlesController {
 	 */
 	@DeleteMapping("")
 	public ServerResponse<?> delete(@RequestBody Map<String, String> params) {
-		articleService.delete(params.get("id"));
-		return ServerResponse.response(ResponseCode.NO_CONTENT);
+		String id = articleService.delete(params.get("id"));
+		return ServerResponse.response(ResponseCode.NO_CONTENT, id);
 	}
 
 

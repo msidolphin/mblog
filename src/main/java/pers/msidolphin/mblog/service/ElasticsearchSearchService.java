@@ -110,11 +110,11 @@ public class ElasticsearchSearchService implements ISearchService {
 	private boolean create(ArticleIndexTemplate indexTemplate) {
 		IndexResponse response = elasticsearchClient.prepareIndex(ArticleIndexTemplate.INDEX_NAME, ArticleIndexTemplate.TYPE, indexTemplate.getArticleId())
 				.setSource(JsonHelper.object2String(indexTemplate), XContentType.JSON).get();
-		if(response.status().getStatus() == ResponseCode.OK.getCode()) {
+		if(response.status().getStatus() == ResponseCode.OK.getCode() || response.status().getStatus() == ResponseCode.CREATED.getCode()) {
 			log.debug("create article index {} success...", indexTemplate.getArticleId());
 			return true;
 		}
-		log.warn("create article index {} failed...", indexTemplate.getArticleId());
+		log.warn("create article index {} failed, status code: {}", indexTemplate.getArticleId(), response.status().getStatus());
 		return false;
 	}
 

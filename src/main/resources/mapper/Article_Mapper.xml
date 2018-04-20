@@ -56,7 +56,7 @@
             </if>
     </select>
     
-    <update id="updateById" parameterType="pers.msidolphin.mblog.object.dto.AdminArticleDto">
+    <update id="updateByArticleId" parameterType="pers.msidolphin.mblog.object.dto.AdminArticleDto">
         UPDATE article
           <set>
             <if test="content != null">
@@ -80,7 +80,7 @@
               update_time = now(),
               updator = #{updator}
           </set>
-            WHERE id = #{id}
+            WHERE id = #{articleId}
     </update>
 
     <!-- 文章按月统计 选择具体的某一年进行统计 统计12个月份 -->

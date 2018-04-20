@@ -15,7 +15,7 @@ public interface ArticleMapper {
 
 	List<ArticleDto> findArticles(ArticleQuery query);
 
-	int updateById(Article article);
+	int updateByArticleId(Article article);
 
 	List<Map<String, Integer>> monthlyReport(@Param("year") String year, @Param("maxMonth") Integer max, @Param("list") List<String> list);
 

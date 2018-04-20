@@ -10,8 +10,6 @@ import java.io.Serializable;
 /**
  * Created by msidolphin on 2018/3/26.
  */
-@Getter
-@Setter
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 @SuppressWarnings({"unused"})
 public class ServerResponse<T> implements Serializable {
@@ -65,10 +63,6 @@ public class ServerResponse<T> implements Serializable {
 		return new ServerResponse<>(ResponseCode.OK.getCode(), ResponseCode.OK.getDescription(), data);
 	}
 
-	public static ServerResponse success(String msg) {
-		return new ServerResponse(ResponseCode.OK.getCode(), msg);
-	}
-
 	public static ServerResponse success() {
 		return new ServerResponse<>(ResponseCode.OK.getCode(), ResponseCode.OK.getDescription());
 	}
@@ -116,6 +110,33 @@ public class ServerResponse<T> implements Serializable {
 	//conflict
 	public static ServerResponse conflict() {
 		return new ServerResponse(ResponseCode.CONFLICT);
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public ServerResponse setStatus(Integer status) {
+		this.status = status;
+		return this;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public ServerResponse setMessage(String message) {
+		this.message = message;
+		return this;
+	}
+
+	public T getData() {
+		return data;
+	}
+
+	public ServerResponse setData(T data) {
+		this.data = data;
+		return this;
 	}
 
 	@Override
