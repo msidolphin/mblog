@@ -7,8 +7,11 @@ import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.object.dto.ArticleDto;
 import pers.msidolphin.mblog.object.dto.ReportDto;
 import pers.msidolphin.mblog.object.query.ArticleQuery;
+import pers.msidolphin.mblog.object.query.ArticleSearch;
 import pers.msidolphin.mblog.service.ArticleService;
+import pers.msidolphin.mblog.service.inter.ISearchService;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 
@@ -22,6 +25,9 @@ public class ArticlesController {
 
 	@Autowired
 	private ArticleService articleService;
+
+	@Resource
+	private ISearchService searchService;
 
 	/**
 	 * 文章列表
@@ -55,5 +61,10 @@ public class ArticlesController {
 	@GetMapping("/reports/pie")
 	public ServerResponse<?> report() {
 		return articleService.pieReports();
+	}
+
+	@GetMapping("/_search")
+	public ServerResponse<?> search(ArticleSearch articleSearch) {
+		return searchService.search(articleSearch);
 	}
 }

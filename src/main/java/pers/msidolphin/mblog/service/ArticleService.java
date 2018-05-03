@@ -88,6 +88,7 @@ public class ArticleService extends BaseService{
         }
         //设置分页参数
         PageHelper.startPage(query.getPageNum(), query.getPageSize(), "a.create_time desc");
+        query.setIsDelete(0);
         List<ArticleDto> lists = articleMapper.findArticles(query);
         //获取标签
         for(ArticleDto articleDto : lists) {
@@ -130,7 +131,7 @@ public class ArticleService extends BaseService{
                 //tags字段现在不存入数据库
                 List<String> ids = tagService.saveTags4newArticle(Util.asList(articleDto.getTags().split(",")), user.getId());
                 for(String nid : ids) {
-                    //建立关联
+                    //建立F关联
                     tagService.createRelationship(article.getArticleId().toString(), nid);
                 }
             }

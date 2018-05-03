@@ -1,11 +1,13 @@
 package pers.msidolphin.mblog.common;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created by msidolphin on 2018/3/26.
@@ -65,6 +67,20 @@ public class ServerResponse<T> implements Serializable {
 
 	public static ServerResponse success() {
 		return new ServerResponse<>(ResponseCode.OK.getCode(), ResponseCode.OK.getDescription());
+	}
+
+	public static ServerResponse success4Elasticsearch() {
+		Map<String, Object> result = Maps.newHashMap();
+		result.put("hits", 0);
+		result.put("meta", new Object());
+		return new ServerResponse<>(ResponseCode.OK.getCode(), ResponseCode.OK.getDescription(), result);
+	}
+
+	public static ServerResponse success4Elasticsearch(long hits, Object meta) {
+		Map<String, Object> result = Maps.newHashMap();
+		result.put("hits", hits);
+		result.put("meta", meta);
+		return new ServerResponse<>(ResponseCode.OK.getCode(), ResponseCode.OK.getDescription(), result);
 	}
 
 	// Bad Request

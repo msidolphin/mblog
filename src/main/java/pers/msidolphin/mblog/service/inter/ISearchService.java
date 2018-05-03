@@ -1,5 +1,10 @@
 package pers.msidolphin.mblog.service.inter;
 
+import pers.msidolphin.mblog.common.ServerResponse;
+import pers.msidolphin.mblog.object.query.ArticleQuery;
+import pers.msidolphin.mblog.object.query.ArticleSearch;
+import pers.msidolphin.mblog.object.query.BaseQuery;
+
 /**
  * 检索接口
  * Created by msidolphin on 2018/4/20.
@@ -18,4 +23,5 @@ public interface ISearchService {
 	 */
 	boolean remove(String id);
 
+	ServerResponse<?> search(ArticleSearch search);
 }

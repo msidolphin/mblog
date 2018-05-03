@@ -6,8 +6,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import pers.msidolphin.mblog.common.ServerResponse;
 import pers.msidolphin.mblog.common.enums.ResponseCode;
 import pers.msidolphin.mblog.exception.ServiceException;
+import pers.msidolphin.mblog.object.query.ArticleSearch;
 
 
 /**
@@ -54,5 +56,19 @@ public class ElasticsearchSearchServiceTest {
 		String id = "aaa";
 		boolean result = service.remove(id);
 		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void search() {
+		String title = "elasticsearch 基础";
+		String sumamry = "elasticsearch 基础";
+		ArticleSearch search = new ArticleSearch();
+		search.setSummary(sumamry);
+		search.setTitle(title);
+		search.setPageNum(1);
+		search.setPageSize(10);
+		ServerResponse response = service.search(search);
+		System.out.println("response => " + response);
+		Assert.assertNotNull(response);
 	}
 }
