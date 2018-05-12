@@ -171,6 +171,19 @@ CREATE TABLE IF NOT EXISTS `setting` (
   UNIQUE KEY `setting_value_unqiue` (`key_value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='站点配置表';
 
+--
+-- 转存表中的数据 `setting`
+--
+
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(1, 'PORTAL_TITLE', '细节决定成败', '门户标题', 0, 0, '2018-03-26 22:15:11', '2018-04-26 21:47:32', NULL, 1);
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(2, 'PORTAL_BACKGROUND', 'http://localhost:8089/bg.jpg', '门户背景图', 0, 1, '2018-03-26 22:15:11', '2018-03-26 22:15:11', NULL, NULL);
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(3, 'PORTAL_AVATAR', 'http://localhost:8089/avatar.jpg', '门户博主头像', 0, 1, '2018-04-06 10:19:39', '2018-04-06 10:19:39', 1, 1);
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(4, 'ICP', '粤ICP备xxxxxxxx号-x', 'ICP备案', 2, 0, '2018-03-26 22:15:11', '2018-03-26 22:15:11', NULL, NULL);
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(5, 'SITE', 'https://github.com/msidolphin/', '站点网址', 2, 0, '2018-03-26 22:15:11', '2018-03-26 22:15:11', NULL, NULL);
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(6, 'DESIGNED_BY', 'http://vinceok.com', '站点模板引用', 0, 0, '2018-03-26 22:15:11', '2018-04-08 22:12:46', NULL, 1);
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(7, 'COPYRIGHT', '2017-2018', '版权期限', 0, 0, '2018-03-26 22:15:11', '2018-03-26 22:15:11', NULL, NULL);
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(8, 'REPRODUCE', '除特别注明外，本站所有文章均为原创，转载请注明原文链接：', '转载说明', 0, 0, '2018-03-26 22:15:11', '2018-03-26 22:15:11', NULL, NULL);
+INSERT INTO `setting` (`id`, `key_value`, `value`, `name`, `type`, `is_image`, `create_time`, `update_time`, `creator`, `updator`) VALUES(9, 'CONTRACT_EMAIL', '1226771922@qq.com', '联系邮箱', 0, 0, '2018-03-26 22:15:11', '2018-03-26 22:15:11', NULL, NULL);
 
 
 -- --------------------------------------------------------
