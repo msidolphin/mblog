@@ -12,7 +12,7 @@
         },
         "title": {
           "type": "text",
-          "analyzer": "ik_smart"
+          "analyzer": "ik_max_word"
         },
         "tag": {
           "type": "keyword",
@@ -20,11 +20,11 @@
         },
         "content": {
           "type": "text",
-          "analyzer": "ik_smart"
+          "analyzer": "ik_max_word"
         },
         "summary": {
           "type": "text",
-          "analyzer": "ik_smart"
+          "analyzer": "ik_max_word"
         },
         "views": {
           "type": "integer"
