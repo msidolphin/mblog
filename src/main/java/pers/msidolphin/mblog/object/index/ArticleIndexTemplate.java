@@ -20,7 +20,7 @@ public class ArticleIndexTemplate {
 	public static final String ARTICLE_ID = "articleId";
 	public static final String SUMMARY = "summary";
 	public static final String TITLE = "title";
-	public static final String CONTENT = "content";
+	// public static final String CONTENT = "content";
 	public static final String TAG = "tag";
 	public static final String VIEWS = "views";
 	public static final String CREATE_TIME = "createTime";
@@ -32,7 +32,7 @@ public class ArticleIndexTemplate {
 
 	private String title;
 
-	private String content;
+	// private String content;
 
 	private List<String> tag;
 
@@ -48,7 +48,7 @@ public class ArticleIndexTemplate {
 				"articleId='" + articleId + '\'' +
 				", summary='" + summary + '\'' +
 				", title='" + title + '\'' +
-				", content='" + content + '\'' +
+				// ", content='" + content + '\'' +
 				", tag=" + tag +
 				", views=" + views +
 				", createTime=" + createTime +

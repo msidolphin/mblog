@@ -50,11 +50,11 @@ public class CommentService extends BaseService{
 	 * @param articleId 文章id
 	 * @return {List} 评论列表
 	 */
-	public PageInfo<CommentDto> getComments(String articleId, Integer pageSize, Integer pageNum) {
+	public PageInfo<CommentDto> getComments(String articleId, Integer pageSize, Integer pageNum, Integer status) {
 		Assert.notNull(articleId);
 		//评论分页
 		PageHelper.startPage(pageNum, pageSize, "c.create_time desc");
-		List<CommentDto> comments = commentMapper.findCommentsByArticleId(articleId);
+		List<CommentDto> comments = commentMapper.findCommentsByArticleId(articleId, status);
 		PageInfo<CommentDto> pageInfo = new PageInfo<>(comments);
 		//获取评论回复
 		for(CommentDto comment : pageInfo.getList()) {
@@ -103,7 +103,7 @@ public class CommentService extends BaseService{
 		//点赞数
 		comment.setVote(0);
 		//状态
-		comment.setStatus(0);
+		comment.setStatus(1);
 
 		//保存
 		commentRepository.save(comment);

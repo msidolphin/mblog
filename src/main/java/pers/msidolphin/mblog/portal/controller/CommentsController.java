@@ -42,7 +42,7 @@ public class CommentsController {
 								 @RequestParam(defaultValue = "10", required = false) Integer pageSize,
 								 @RequestParam(defaultValue = "1", required = false) Integer pageNum) {
 		if(Util.isEmpty(articleId)) return ServerResponse.badRequest();
-		return ServerResponse.success(commentService.getComments(articleId, pageSize, pageNum));
+		return ServerResponse.success(commentService.getComments(articleId, pageSize, pageNum, 1));
 	}
 
 	/**

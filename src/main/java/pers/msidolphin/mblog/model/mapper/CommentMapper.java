@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface CommentMapper {
 
-	List<CommentDto> findCommentsByArticleId(String id);
+	List<CommentDto> findCommentsByArticleId(@Param("id") String id,@Param("status") Integer status);
 
 	List<AdminCommentDto> findComments(CommentQuery query);
 

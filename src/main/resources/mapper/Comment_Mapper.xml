@@ -24,12 +24,16 @@
             u.username username,
             u.email email,
             u.website website,
-            (SELECT count(0) cnum FROM replies r WHERE r.comment_id = c.id) reply_count,
+            (SELECT count(0) cnum FROM replies r WHERE r.comment_id = c.id and r.status = 1) reply_count,
             u.avatar avatar,
             u.id user_id,
             c.content content,
             DATE_FORMAT(c.create_time,'%Y-%m-%d %h:%i:%s') create_time
-        FROM comment c LEFT JOIN user u on c.user_id = u.id where c.article_id = #{id}
+        FROM comment c LEFT JOIN user u on c.user_id = u.id
+        where c.article_id = #{id}
+        <if test="status != null">
+            and c.status = #{status}
+        </if>
     </select>
 
     <select id="findComments" parameterType="pers.msidolphin.mblog.object.query.CommentQuery" resultType="pers.msidolphin.mblog.object.dto.AdminCommentDto">
@@ -78,6 +82,6 @@
     </update>
     
     <select id="selectCommentCount" resultType="int">
-        SELECT count(0) FROM (SELECT c.status FROM comment c UNION ALL SELECT r.status FROM replies r) m WHERE m.status = 0
+        SELECT count(0) FROM (SELECT c.status FROM comment c where c.status = 1 UNION ALL SELECT r.status FROM replies r where r.status = 1) m
     </select>
 </mapper>

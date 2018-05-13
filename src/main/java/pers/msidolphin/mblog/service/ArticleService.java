@@ -271,7 +271,7 @@ public class ArticleService extends BaseService{
             //文章类型
             articleDto.setTypeName(ArticleType.get(articleDto.getTypeCode()).getValue());
             //获取评论信息
-            PageInfo<CommentDto> comments = commentService.getComments(id, 10, 1);
+            PageInfo<CommentDto> comments = commentService.getComments(id, 10, 1, 1);
 
             Integer replies = articleMapper.selectArtcileCommentAndReplyCount(articleDto.getId());
             //获取评论和回复数

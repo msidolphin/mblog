@@ -1,6 +1,6 @@
 {
   "settings": {
-    "number_of_replicas": 1
+    "number_of_replicas": 0
   },
   "mappings": {
     "doc": {
@@ -17,10 +17,6 @@
         "tag": {
           "type": "keyword",
           "index": "not_analyzed"
-        },
-        "content": {
-          "type": "text",
-          "analyzer": "ik_max_word"
         },
         "summary": {
           "type": "text",
