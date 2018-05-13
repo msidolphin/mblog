@@ -48,7 +48,6 @@ public class DashboardService {
 		Map<String, Object> echartsData = Maps.newHashMap();
 		echartsData.put("dashboard-bar", reportsMap);
 		dashboardDto.setEchartsData(echartsData);
-		System.out.println(dashboardDto);
 		return ServerResponse.success(dashboardDto);
 	}
 

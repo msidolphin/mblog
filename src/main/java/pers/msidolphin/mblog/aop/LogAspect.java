@@ -36,16 +36,16 @@ public class LogAspect {
 		Long startTime = System.currentTimeMillis();
 		log.info("请求方法: {}", joinPoint.getSignature().getName() + "()");
 		log.info("方法描述: {}", joinPoint);
-		log.info("请求参数: ");
+		log.debug("请求参数: ");
 		try {
 			printMethodNameAndArgus((MethodSignature) joinPoint.getSignature(), joinPoint.getArgs());
 			returnVal = joinPoint.proceed();
 			Long endTime = System.currentTimeMillis();
-			log.info("返回参数: {}", JsonHelper.object2String(returnVal));
+			log.debug("返回参数: {}", JsonHelper.object2String(returnVal));
 			log.info("请求耗时: {}ms", endTime - startTime);
 
 		} catch (Throwable throwable) {
-			log.info("未能正常执行: {}", throwable.getMessage());
+			log.warn("未能正常执行: {}", throwable.getMessage());
 			throw new RuntimeException(throwable);
 		}
 		StringBuilder sb = new StringBuilder();
@@ -57,14 +57,16 @@ public class LogAspect {
 	}
 
 	private void printMethodNameAndArgus(MethodSignature signature, Object[] objects) throws IOException{
-		signature.getParameterNames();
-		signature.getParameterTypes();
-		String[] names = signature.getParameterNames();
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0 ; i < objects.length ; ++i) {
-			sb.append(names[i] + " : " + objects[i] + " | ");
+		if (log.isDebugEnabled()) {
+			signature.getParameterNames();
+			signature.getParameterTypes();
+			String[] names = signature.getParameterNames();
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < objects.length; ++i) {
+				sb.append(names[i] + " : " + objects[i] + " | ");
+			}
+			String output = sb.toString();
+			log.debug(output.substring(0, output.lastIndexOf("|") + 1));
 		}
-		String output = sb.toString();
-		log.info(output.substring(0, output.lastIndexOf("|") + 1));
 	}
 }
