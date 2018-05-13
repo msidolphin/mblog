@@ -92,4 +92,6 @@ public class ArticlesController {
 		return articleService.pieReports();
 	}
 
+	@GetMapping("/reports/hot")
+	public ServerResponse<?> hot() {return ServerResponse.success(articleService.hotReports());}
 }

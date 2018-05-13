@@ -233,7 +233,7 @@ public class TagService extends BaseService{
 
         xAxis.setType("category");
         //标题
-        title.setText("TOP"+ limit +"标签引用次数柱状图");
+        title.setText("热门标签");
 
         List<Object> xAxisData = Lists.newArrayList();
         List<Object> seriesData = Lists.newArrayList();
