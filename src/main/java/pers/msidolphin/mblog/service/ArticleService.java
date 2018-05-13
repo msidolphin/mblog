@@ -615,4 +615,26 @@ public class ArticleService extends BaseService{
         articleMapper.updateByArticleId(article);
         return id;
     }
+
+	public Map<String, Object> hotReports() {
+        List<Object> articleTitles = Lists.newArrayList();
+        List<Object> articleViews = Lists.newArrayList();
+        List<Object> articleVotes = Lists.newArrayList();
+        List<Object> articlesReplies = Lists.newArrayList();
+        List<Map<String, Object>> articles = articleMapper.selectHotArticles();
+        for (Map<String, Object> article : articles) {
+            for (String key : article.keySet()) {
+                if ("title".equals(key)) articleTitles.add(article.get(key));
+                else if ("views".equals(key)) articleViews.add(article.get(key));
+                else if ("replies".equals(key)) articlesReplies.add(article.get(key));
+                else if ("votes".equals(key)) articleVotes.add(article.get(key));
+            }
+        }
+        Map<String, Object> result = Maps.newHashMap();
+        result.put("titles", articleTitles);
+        result.put("views", articleViews);
+        result.put("votes", articleVotes);
+        result.put("replies", articlesReplies);
+        return result;
+	}
 }

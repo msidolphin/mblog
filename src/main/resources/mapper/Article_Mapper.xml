@@ -121,4 +121,22 @@
         SELECT SUM((SELECT count(0) + 1 FROM replies r WHERE r.comment_id = c.id and r.status = 1)) count FROM comment c
         WHERE c.article_id = #{id} and c.status = 1
     </select>
+
+    <select id="selectHotArticles" resultType="map">
+        SELECT * FROM
+            (
+                SELECT a.title  -- 文章标题
+                    ,a.create_time
+                    , a.views  -- 文章阅览数
+                    , (SELECT
+                           IFNULL(
+                                   SUM((SELECT count(0) + 1 FROM replies r WHERE r.comment_id = c.id and r.status = 1)), 0) AS count
+                       FROM comment c WHERE c.article_id = a.id and c.status = 1
+                      ) AS replies -- 文章评论数
+                    ,a.vote as votes  -- 文章点赞数
+                FROM article a
+                ORDER BY views, replies, vote LIMIT 0,10
+            ) t
+        ORDER BY t.create_time DESC
+    </select>
 </mapper>

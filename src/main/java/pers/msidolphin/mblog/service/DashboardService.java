@@ -48,6 +48,8 @@ public class DashboardService {
 		Map<String, Object> echartsData = Maps.newHashMap();
 		echartsData.put("dashboard-bar", reportsMap);
 		dashboardDto.setEchartsData(echartsData);
+		Map<String, Object> hotArticles = articleService.hotReports();
+		echartsData.put("hottestArticles", hotArticles); // 获取最热文章
 		return ServerResponse.success(dashboardDto);
 	}
 
