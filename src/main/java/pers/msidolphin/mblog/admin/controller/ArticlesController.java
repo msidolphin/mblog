@@ -28,7 +28,6 @@ public class ArticlesController {
 
 	@GetMapping("")
 	public ServerResponse<?> list(ArticleQuery query) throws ParseException {
-		System.out.println("isDelete:" + query.getIsDelete());
 		return ServerResponse.success(articleService.getArticles(query));
 	}
 

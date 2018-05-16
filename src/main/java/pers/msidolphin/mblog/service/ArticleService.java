@@ -88,7 +88,6 @@ public class ArticleService extends BaseService{
         }
         //设置分页参数
         PageHelper.startPage(query.getPageNum(), query.getPageSize(), "a.create_time desc");
-        query.setIsDelete(0);
         List<ArticleDto> lists = articleMapper.findArticles(query);
         //获取标签
         for(ArticleDto articleDto : lists) {
@@ -148,6 +147,20 @@ public class ArticleService extends BaseService{
             articleRepository.save(article);
 
         }else {
+
+            List<String> tags = Lists.newArrayList();
+            if (Util.isNotEmpty(articleDto.getTags())) tags = Util.asList(articleDto.getTags().split(","));
+            // 删除之前的标签
+            List<String> originTags = Util.asList(originTagStr.split(","));
+
+            tagService.delTag(originTags, user.getId());
+            tagService.deleteByArticleId(id);
+
+            List<String> newIds = tagService.saveTags(tags, user.getId());
+            for(String newId : newIds) {
+                tagService.createRelationship(article.getArticleId().toString(), newId);
+            }
+            /*
             //判断当前标签和原标签的差异
             List<String> originTags = Util.asList(originTagStr.split(","));
             List<String> currentTags = Util.asList(articleDto.getTags().split(","));
@@ -158,7 +171,7 @@ public class ArticleService extends BaseService{
 
             //add
             if(originTagId == null) originTagId = "";
-            if(articleDto.getTagsId() == null) articleDto.setTags("");
+            if(articleDto.getTagsId() == null) articleDto.setTagsId("");
             List<String> originTagIds = Util.asList(originTagId.split(","));
             List<String> currentTagIds = Util.asList(articleDto.getTagsId().split(","));
             //===========
@@ -185,6 +198,7 @@ public class ArticleService extends BaseService{
                 for(int i = 0 ; i < addIds.size() ; ++i)
                     tagService.createRelationship(article.getArticleId().toString(), addIds.get(i));
             }
+            */
             article.setUpdator(user.getId());
             articleMapper.updateByArticleId(article);
         }

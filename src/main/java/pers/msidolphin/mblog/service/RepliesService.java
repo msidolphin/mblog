@@ -61,7 +61,7 @@ public class RepliesService {
 		reply.setCreateTime(new Date());
 		//更新时间
 		reply.setUpdateTime(new Date());
-		reply.setStatus(0);
+		reply.setStatus(1);
 		//点赞数
 		reply.setVote(0);
 		repliesRepository.save(reply);

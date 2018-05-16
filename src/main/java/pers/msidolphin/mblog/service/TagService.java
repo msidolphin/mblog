@@ -33,6 +33,10 @@ public class TagService extends BaseService{
     @Autowired
     private TagMapper tagMapper;
 
+    public void deleteByArticleId(String id) {
+        tagRepository.deleteByArticleId(id);
+    }
+
     public ServerResponse<?> getTags(TagQuery query) {
         PageHelper.startPage(query.getPageNum(), query.getPageSize(), query.getOrder());
         PageInfo<AdminTagDto> pageInfo = new PageInfo<>(tagMapper.findTags(query));

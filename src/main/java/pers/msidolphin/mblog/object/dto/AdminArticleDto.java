@@ -11,6 +11,6 @@ import pers.msidolphin.mblog.object.po.Article;
 @Getter
 @Setter
 public class AdminArticleDto extends Article {
-	private String tagsId;
 	private String tags;		 //标签字符串
+	private String tagsId;
 }

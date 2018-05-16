@@ -36,6 +36,7 @@ public class ArticlesController {
 	 */
 	@GetMapping("")
 	public ServerResponse<?> list(ArticleQuery query) throws ParseException {
+		query.setIsDelete(0);
 		PageInfo<ArticleDto> page = articleService.getArticles(query);
 		return ServerResponse.success(page);
 	}

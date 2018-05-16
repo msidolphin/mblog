@@ -118,7 +118,7 @@
     
     <!-- 获取文章评论和回复总数 -->
     <select id="selectArtcileCommentAndReplyCount" resultType="integer" parameterType="string">
-        SELECT SUM((SELECT count(0) + 1 FROM replies r WHERE r.comment_id = c.id and r.status = 1)) count FROM comment c
+        SELECT SUM((SELECT count(*) + 1 FROM replies r WHERE r.comment_id = c.id and r.status = 1)) count FROM comment c
         WHERE c.article_id = #{id} and c.status = 1
     </select>
 
