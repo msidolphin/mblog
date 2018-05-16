@@ -80,7 +80,8 @@ public class ElasticsearchSearchService implements ISearchService {
 		SearchRequestBuilder searchRequestBuilder =
 				elasticsearchClient.prepareSearch(ArticleIndexTemplate.INDEX_NAME)
 				.setTypes(ArticleIndexTemplate.TYPE)
-				.setQuery(QueryBuilders.termQuery(ArticleIndexTemplate.ARTICLE_ID, indexTemplate.getArticleId()));
+				.setQuery(QueryBuilders.termQuery(ArticleIndexTemplate.ARTICLE_ID, indexTemplate.getArticleId()))
+				;
 		SearchResponse response = searchRequestBuilder.get();
 		boolean success = false;
 		long hits = response.getHits().getTotalHits();
@@ -176,7 +177,7 @@ public class ElasticsearchSearchService implements ISearchService {
 		}
 		SearchRequestBuilder searchRequestBuilder = elasticsearchClient.prepareSearch(ArticleIndexTemplate.INDEX_NAME)
 				.setTypes(ArticleIndexTemplate.TYPE)
-				.setQuery(boolQuery).setFrom(search.getPageNum() - 1).setSize(search.getPageSize()); //es从0开始
+				.setQuery(boolQuery);//.setFrom(search.getPageNum() - 1).setSize(search.getPageSize()); //es从0开始
 
 		//设置高亮关键字
 		HighlightBuilder highlightBuilder = new HighlightBuilder().field("title").field("summary").requireFieldMatch(false);

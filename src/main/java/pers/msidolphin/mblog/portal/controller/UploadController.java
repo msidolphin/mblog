@@ -11,7 +11,7 @@ import pers.msidolphin.mblog.service.FileService;
  * Created by msidolphin on 2018/4/3.
  */
 @RestController
-@CrossOrigin(origins = {"http://localhost:8081", "http://localhost:8080"}, maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:8081", "http://localhost:8080", "http://localhost:9200", "http://localhost:9000"}, maxAge = 3600)
 @RequestMapping("/upload")
 public class UploadController {
 
