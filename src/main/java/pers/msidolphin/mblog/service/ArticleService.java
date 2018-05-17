@@ -265,6 +265,14 @@ public class ArticleService extends BaseService{
             tagService.brokenRelationship(id, tagId);
             tagService.delTagById(tagId, user.getId());
         }
+        List<String> cids = articleMapper.selectCommentIdsByArticleId(id);
+        if (cids.size() > 0) {
+            // 删除回复
+            commentService.deleteRepliesByCommentIds(cids);
+            // 删除评论
+            commentService.deleteByCommentIds(cids);
+        }
+        // 删除文章
         articleRepository.deleteById(id);
         return id;
     }

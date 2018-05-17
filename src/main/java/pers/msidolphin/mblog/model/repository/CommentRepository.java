@@ -9,4 +9,5 @@ import pers.msidolphin.mblog.object.po.Comment;
  */
 @Repository
 public interface CommentRepository extends CrudRepository<Comment, Long>{
+	void deleteById(Long id);
 }

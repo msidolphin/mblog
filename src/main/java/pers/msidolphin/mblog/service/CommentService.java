@@ -115,4 +115,15 @@ public class CommentService extends BaseService{
 		return commentMapper.selectCommentCount();
 	}
 
+	public void deleteById(String id) {
+		commentRepository.deleteById(Long.parseLong(id));
+	}
+
+	public int deleteRepliesByCommentIds(List<String> ids) {
+		return commentMapper.deleteRepliesByCommentId(ids);
+	}
+
+	public int deleteByCommentIds(List<String> ids) {
+		return commentMapper.deleteByCommentIds(ids);
+	}
 }

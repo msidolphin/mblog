@@ -29,4 +29,6 @@ public interface ArticleMapper {
 
 	List<Map<String, Object>> selectHotArticles();
 
+	List<String> selectCommentIdsByArticleId(String id);
+
 }

@@ -19,4 +19,8 @@ public interface CommentMapper {
 	int updateStatusById(@Param("status") String status,@Param("id") String id);
 
 	int selectCommentCount();
+
+	int deleteRepliesByCommentId(List<String> list);
+
+	int deleteByCommentIds(List<String> list);
 }

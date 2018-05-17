@@ -139,4 +139,8 @@
             ) t
         ORDER BY t.create_time DESC
     </select>
+
+    <select id="selectCommentIdsByArticleId" resultType="string" parameterType="string">
+        select c.id from comment c where c.article_id = #{id}
+    </select>
 </mapper>
